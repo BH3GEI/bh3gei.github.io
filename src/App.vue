@@ -29,7 +29,7 @@
 export default {
   data() {
     return {
-      cursorImage: require('@/assets/cursor.png')
+      cursorImage: 'https://user-images.githubusercontent.com/58540850/280524668-30b7dcfb-dcf6-4803-a372-1cc91bb53434.png'
     }
   },
   mounted() {
@@ -90,7 +90,6 @@ button:hover {
 }
 
 #app {
-  cursor: url('@/assets/cursor.png'), auto;
   position: absolute;
   top: 0;
   left: 0;
