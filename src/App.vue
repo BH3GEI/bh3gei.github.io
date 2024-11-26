@@ -1,166 +1,413 @@
 <template>
-    <div id="app" :style="{ 'cursor': `url(${cursorImage}), auto`, backgroundImage: 'url(' + imgUrl + ')' }">
-    <div class="center-box">
-      <details open>
-        <summary></summary>
-        <a href="https://liyao.blog" target="_blank">
-        <img class="avatar" src="https://avatars.githubusercontent.com/u/58540850?v=4" alt="avatar" />
-        </a>
-        <h2>Liyao's Site</h2>
-        <div class="link-list">
-          <a href="https://liyao.blog" target="_blank">
-            <button>Blog</button>
-          </a>
-          <a href="mailto:scholar.liyao@gmail.com">
-            <button>Email</button>
-          </a>
-          <a href="https://github.com/BH3GEI" target="_blank">
-            <button>Github</button>
-          </a>
+  <div id="app" class="dark-mode">
+    <StarryBackground v-if="isWarpMode" />
+    <OrbitBackground v-else />
+    <div class="app-container">
+      <MouseTrailer ref="mouseTrailer" />
+      <div class="theme-toggle" @click="toggleTheme">
+        <font-awesome-icon :icon="isWarpMode ? 'rocket' : 'globe'" />
+      </div>
+      <a href="https://vue.dev" target="_blank" class="powered-by">
+        Powered by Vue & Cloudflare Workers
+      </a>
+      <Profile v-if="showProfile" 
+        :class="{ 'minimized': isProfileMinimized }" 
+        :style="{ zIndex: getZIndex('Profile') }"
+        @close="closeProfile" 
+        @minimize="minimizeProfile"
+        @click.self="bringToFront('Profile')"
+        @open-blog="openApp('Blog')" />
+      <Game2048 v-if="show2048" 
+        :class="{ 'minimized': is2048Minimized }" 
+        :style="{ zIndex: getZIndex('2048') }"
+        @close="close2048" 
+        @minimize="minimize2048"
+        @click.self="bringToFront('2048')" />
+      <SpaceShooter v-if="showSpaceShooter" 
+        :class="{ 'minimized': isSpaceShooterMinimized }" 
+        :style="{ zIndex: getZIndex('SpaceShooter') }"
+        @close="closeSpaceShooter" 
+        @minimize="minimizeSpaceShooter"
+        @click.self="bringToFront('SpaceShooter')" />
+      <BlogWindow v-if="showBlog"
+        :class="{ 'minimized': isBlogMinimized }"
+        :style="{ zIndex: getZIndex('Blog') }"
+        @close="closeBlog"
+        @minimize="minimizeBlog"
+        @click.self="bringToFront('Blog')" />
+      <Dock @open-app="openApp">
+        <div class="dock-indicators">
+          <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
+            <font-awesome-icon icon="user" />
+          </div>
+          <div class="dock-item" :class="{ 'running': show2048, 'minimized': is2048Minimized }" @click="show2048 ? (is2048Minimized ? restore2048() : bringToFront('2048')) : openApp('2048')">
+            <font-awesome-icon icon="puzzle-piece" />
+          </div>
+          <div class="dock-item" :class="{ 'running': showSpaceShooter, 'minimized': isSpaceShooterMinimized }" @click="showSpaceShooter ? (isSpaceShooterMinimized ? restoreSpaceShooter() : bringToFront('SpaceShooter')) : openApp('SpaceShooter')">
+            <font-awesome-icon icon="rocket" />
+          </div>
+          <div class="dock-item" :class="{ 'running': showBlog, 'minimized': isBlogMinimized }" @click="showBlog ? (isBlogMinimized ? restoreBlog() : bringToFront('Blog')) : openApp('Blog')">
+            <font-awesome-icon icon="blog" />
+          </div>
         </div>
-      </details>
+      </Dock>
     </div>
-    <div class="powered-by">Powered by Vue & Cloudflare Workers</div>
-    <img :src="cursorImage" class="cursor-icon" />
   </div>
 </template>
 
 <script>
+import { ref, onMounted } from 'vue'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faUser, faPuzzlePiece, faRocket, faGlobe } from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import StarryBackground from './components/StarryBackground/StarryBackground.vue'
+import OrbitBackground from './components/OrbitBackground/OrbitBackground.vue'
+import Profile from './components/Profile/Profile.vue'
+import Game2048 from './components/Game2048/Game2048.vue'
+import SpaceShooter from './components/SpaceShooter/SpaceShooter.vue'
+import BlogWindow from './components/Blog/Blog.vue'
+import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
+import Dock from './components/Dock/Dock.vue'
+
+library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faGithub)
+
 export default {
-  data() {
-    return {
-      cursorImage: 'https://user-images.githubusercontent.com/58540850/280524668-30b7dcfb-dcf6-4803-a372-1cc91bb53434.png'
-    }
+  name: 'App',
+  components: {
+    MouseTrailer,
+    Profile,
+    Dock,
+    StarryBackground,
+    OrbitBackground,
+    Game2048,
+    SpaceShooter,
+    BlogWindow
   },
-  mounted() {
-    document.title = 'Liyao\'s Site';
+  setup() {
+    const showProfile = ref(true)
+    const show2048 = ref(false)
+    const showSpaceShooter = ref(false)
+    const showBlog = ref(false)
+    const isWarpMode = ref(true)
+    const mouseTrailer = ref(null)
+    const isProfileMinimized = ref(false)
+    const is2048Minimized = ref(false)
+    const isSpaceShooterMinimized = ref(false)
+    const isBlogMinimized = ref(false)
+    const activeWindow = ref('Profile')
+    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog'])
+
+    const toggleTheme = () => {
+      import('vue').then(({ nextTick }) => {
+        isWarpMode.value = !isWarpMode.value
+        nextTick(() => {
+          if (isWarpMode.value) {
+            const starryBg = document.querySelector('.starry-background')
+            if (starryBg) starryBg.getContext('2d').canvas.height = window.innerHeight
+          } else {
+            const orbitBg = document.querySelector('.orbit-background')
+            if (orbitBg) orbitBg.getContext('2d').canvas.height = window.innerHeight
+          }
+        })
+      })
+    }
+
+    const openApp = (component) => {
+      if (component === 'Profile') {
+        showProfile.value = true
+        isProfileMinimized.value = false
+        bringToFront('Profile')
+      } else if (component === '2048') {
+        show2048.value = true
+        is2048Minimized.value = false
+        bringToFront('2048')
+      } else if (component === 'SpaceShooter') {
+        showSpaceShooter.value = true
+        isSpaceShooterMinimized.value = false
+        bringToFront('SpaceShooter')
+      } else if (component === 'Blog') {
+        showBlog.value = true
+        isBlogMinimized.value = false
+        bringToFront('Blog')
+      }
+    }
+
+    const closeProfile = () => {
+      showProfile.value = false
+      isProfileMinimized.value = false
+    }
+
+    const close2048 = () => {
+      show2048.value = false
+      is2048Minimized.value = false
+    }
+
+    const closeSpaceShooter = () => {
+      showSpaceShooter.value = false
+      isSpaceShooterMinimized.value = false
+    }
+
+    const closeBlog = () => {
+      showBlog.value = false
+      isBlogMinimized.value = false
+    }
+
+    const minimizeProfile = () => {
+      isProfileMinimized.value = true
+    }
+
+    const minimize2048 = () => {
+      is2048Minimized.value = true
+    }
+
+    const minimizeSpaceShooter = () => {
+      isSpaceShooterMinimized.value = true
+    }
+
+    const minimizeBlog = () => {
+      isBlogMinimized.value = true
+    }
+
+    const restoreProfile = () => {
+      isProfileMinimized.value = false
+    }
+
+    const restore2048 = () => {
+      is2048Minimized.value = false
+    }
+
+    const restoreSpaceShooter = () => {
+      isSpaceShooterMinimized.value = false
+    }
+
+    const restoreBlog = () => {
+      isBlogMinimized.value = false
+    }
+
+    const bringToFront = (window) => {
+      if (activeWindow.value !== window) {
+        const index = windowOrder.value.indexOf(window)
+        if (index !== -1) {
+          windowOrder.value.splice(index, 1)
+          windowOrder.value.push(window)
+          activeWindow.value = window
+        }
+      }
+    }
+
+    const getZIndex = (window) => {
+      return windowOrder.value.indexOf(window) + 10
+    }
+
+    onMounted(() => {
+      document.documentElement.classList.add('dark-mode')
+    })
+
+    return {
+      showProfile,
+      show2048,
+      showSpaceShooter,
+      showBlog,
+      isWarpMode,
+      mouseTrailer,
+      isProfileMinimized,
+      is2048Minimized,
+      isSpaceShooterMinimized,
+      isBlogMinimized,
+      toggleTheme,
+      openApp,
+      closeProfile,
+      close2048,
+      closeSpaceShooter,
+      closeBlog,
+      minimizeProfile,
+      minimize2048,
+      minimizeSpaceShooter,
+      minimizeBlog,
+      restoreProfile,
+      restore2048,
+      restoreSpaceShooter,
+      restoreBlog,
+      bringToFront,
+      getZIndex
+    }
   }
 }
 </script>
 
-<style scoped>
-html, body {
+<style>
+:root {
+  --primary-color: #3b82f6;
+  --primary-hover: #60a5fa;
+  --text-primary: #2c3e50;
+  --text-secondary: #64748b;
+  --bg-primary: #ffffff;
+  --bg-secondary: rgba(255, 255, 255, 0.8);
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode {
+  --primary-color: #60a5fa;
+  --primary-hover: #93c5fd;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --bg-primary: rgba(30, 41, 59, 0.8);
+  --bg-secondary: rgba(30, 41, 59, 0.6);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+* {
   margin: 0;
   padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
   box-sizing: border-box;
 }
 
-.avatar {
-  width: 50px;
-  height: 50px;
-  transition: all 0.3s ease-in-out;
-  border-radius: 50%; /* 使图片变为圆形 */
-}
-
-.avatar:hover {
-  transform: scale(1.2);
-}
-
-button {
-  background-color: rgba(64, 64, 64, 0.5); /* semi-transparent */
-  border: none; 
-  border-radius: 15px;
-  color: white;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer;
-  transition: background-color 0.4s ease-in-out;
-  transition-duration: all 0.4s ease-in-out;
-  padding: 10px 24px;
-  width: 300px;  /* 设置固定宽度 */
-}
-
-summary {
-  position: absolute;
-  top: 0;
-  right: 0;
-  list-style: none;
-}
-
-button:hover {
-  background-color: rgba(0, 0, 0, 0.7);  
-  color: white; 
-  border: none;
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease;
 }
 
 #app {
-  position: absolute;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  /* height: calc(100vh - 2 * (20px)); */
   height: 100vh;
-  /*margin: 20px 0;*/
-  background-size: cover;
-  background-position: center;
+  width: 100vw;
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--bg-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(100px);
+  cursor: pointer;
+  z-index: 10; /* 降低z-index */
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  transition: all 0.3s ease;
 }
 
-#app::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image: url(https://api.vvhan.com/api/view);
-  background-size: cover;
-  background-position: center;
-  filter: blur(3px);
-  z-index: -1;
-}
-
-.center-box {
-  border-radius: 15px;
-  text-align: center;
-  padding: 20px;
-  background-color: rgba(0, 0, 0, 0.5); 
-  backdrop-filter: blur(10px); 
-  color: white; 
-  transition: all 0.5s ease-in-out;  
-}
-
-.cursor-icon {
-  width: 20px;
-  position: fixed;
-  right: 20px;
-  bottom: 9px;
-}
-
-.link-list a {
-  display: block;
-  margin: 10px 0;
-  color: white; 
-}
-
-@media screen and (max-width: 600px) {
-  .center-box {
-    padding: 10px;
-  }
-}
-details {
-  position: relative;
-  transition: all 0.5s ease-in-out;
-  width: 300px;  
+.theme-toggle:hover {
+  transform: scale(1.1);
+  background: var(--bg-primary);
 }
 
 .powered-by {
   position: fixed;
-  right: 45px;
-  bottom: 10px;
-  font-size: 12px;
-  color: white;
+  top: 20px;
+  left: 20px;
+  font-size: 0.8em;
+  color: var(--text-secondary);
+  text-decoration: none;
+  z-index: 10; /* 降低z-index */
+  transition: color 0.3s ease;
 }
 
+.powered-by:hover {
+  color: var(--primary-color);
+}
 
+.dark-mode body {
+  background: transparent;
+}
+
+.minimized {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.dock-indicators {
+  display: flex;
+  gap: 16px;
+  margin: 0 12px;
+  height: 100%;
+  align-items: center;
+}
+
+.dock-item {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.dock-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.dock-item.running::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 5px;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.8;
+}
+
+.dock-item.running:hover::after {
+  transform: translateX(-50%) scale(1.2);
+  opacity: 1;
+}
+
+.dock-item.minimized {
+  opacity: 0.6;
+}
+
+.dock-item.minimized::after {
+  opacity: 0.4;
+}
+
+.running-dot {
+  position: absolute;
+  bottom: -4px;
+  width: 4px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+}
+
+.profile-container,
+.game-2048-container,
+.space-shooter-container,
+.blog-container {
+  position: relative;
+  cursor: default;
+}
+
+.maximized {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 20 !important; /* 确保最大化的窗口在最上层 */
+}
 </style>
