@@ -7,7 +7,9 @@
            @click="openApp(app)"
            @mouseover="onMouseOver($event)"
            @mouseout="onMouseOut($event)">
-        <div class="dock-icon">{{ app.icon }}</div>
+        <div class="dock-icon">
+          <i :class="app.icon"></i>
+        </div>
         <div class="dock-tooltip">{{ app.name }}</div>
       </div>
     </div>
@@ -20,9 +22,10 @@ export default {
   data() {
     return {
       apps: [
-        { name: 'Profile', icon: '👤', component: 'Profile' },
-        { name: '2048', icon: '🔢', component: '2048' },
-        { name: 'Space Shooter', icon: '🚀', component: 'SpaceShooter' }
+        { name: 'Profile', icon: 'mdi mdi-account', component: 'Profile' },
+        { name: 'Blog', icon: 'mdi mdi-post', component: 'Blog' },
+        { name: '2048', icon: 'mdi mdi-numeric-2-box-multiple-outline', component: '2048' },
+        { name: 'Space Shooter', icon: 'mdi mdi-rocket', component: 'SpaceShooter' }
       ]
     }
   },

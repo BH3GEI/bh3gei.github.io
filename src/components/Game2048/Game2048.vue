@@ -92,7 +92,7 @@ export default {
     return {
       position: {
         x: window.innerWidth / 2 - 250,
-        y: window.innerHeight / 2 - 300
+        y: 150
       },
       isDragging: false,
       dragOffset: { x: 0, y: 0 },

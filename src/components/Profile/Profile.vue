@@ -22,44 +22,101 @@
           <h2>LI YAO</h2>
           <p class="welcome">Welcome to my space!</p>
           <div class="social-links">
-            <a @click.prevent="$emit('open-blog')" href="#" class="social-link">
-              <font-awesome-icon :icon="['fas', 'blog']" />
-              Blog
-            </a>
-            <a href="https://github.com/bh3gei" target="_blank" class="social-link">
-              <font-awesome-icon :icon="['fab', 'github']" />
-              Github
-            </a>
-            <a href="mailto:scholar.liyao@gmail.com" class="social-link">
-              <font-awesome-icon :icon="['fas', 'envelope']" />
-              Email
-            </a>
+            <div class="social-group">
+              <a @click.prevent="handleBlogClick" href="#" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'blog']" />
+                </span>
+                <span class="text">Blog</span>
+              </a>
+              <a href="https://github.com/bh3gei" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'github']" />
+                </span>
+                <span class="text">Github</span>
+              </a>
+              <a href="mailto:scholar.liyao@gmail.com" 
+                class="social-link" 
+                @click.prevent="handleEmailClick" 
+                ref="emailLink"
+                :data-tooltip="tooltipText">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'envelope']" />
+                </span>
+                <span class="text">Email</span>
+              </a>
+            </div>
+            <div class="social-group">
+              <a href="https://music.163.com/#/user/home?id=6336499362" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'headphones']" />
+                </span>
+                <span class="text">163 Music</span>
+              </a>
+              <a href="https://open.spotify.com/user/dixonhill-?si=35067335daa44ff3" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'spotify']" />
+                </span>
+                <span class="text">Spotify</span>
+              </a>
+              <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'telegram']" />
+                </span>
+                <span class="text">Telegram</span>
+              </a>
+            </div>
+            <div class="social-group">
+              <a href="https://stratoproxy.stratosphericus.workers.dev" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'shield-halved']" />
+                </span>
+                <span class="text">Web Proxy</span>
+              </a>
+              <a href="https://chat-gpt-next-web-ozpr.vercel.app/" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'robot']" />
+                </span>
+                <span class="text">ChatGPT</span>
+              </a>
+            </div>
           </div>
         </div>
       </details>
     </div>
+    <NavigationModal
+      v-model="showBlogModal"
+      @choice="handleBlogChoice"
+    />
   </div>
 </template>
 
 <script>
 import { ref, computed } from 'vue'
+import NavigationModal from '../Modal/NavigationModal.vue'
 
 export default {
   name: 'ProfileWindow',
-  emits: ['close', 'minimize', 'click', 'open-blog'],
-  setup() {
+  components: {
+    NavigationModal
+  },
+  emits: ['close', 'minimize', 'click', 'open-blog', 'navigate-blog'],
+  setup(props, { emit }) {
     const details = ref(null)
     const profileWindow = ref(null)
+    const emailLink = ref(null)
     const isOpen = ref(true)
     const isDragging = ref(false)
     const position = ref({
-      x: window.innerWidth / 2 - 160, // 320/2 = 160，使窗口水平居中
-      y: window.innerHeight / 2 - 225  // 约450/2 = 225，使窗口垂直居中
+      x: window.innerWidth / 2 - 250, // 调整为窗口实际宽度的一半
+      y: window.innerHeight / 2 - 300  // 向上移动更多
     })
     const dragOffset = ref({
       x: 0,
       y: 0
     })
+    const tooltipText = ref('Click to copy')
+    const showBlogModal = ref(false)
 
     const iconStyle = computed(() => ({
       transform: isOpen.value ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -110,18 +167,47 @@ export default {
       isOpen.value = details.value.open
     }
 
+    const handleBlogClick = () => {
+      showBlogModal.value = true
+    }
+
+    const handleBlogChoice = (choice) => {
+      if (choice === 'new') {
+        window.open('https://blog.stratosphericus.workers.dev', '_blank')
+      } else {
+        emit('open-blog')
+      }
+    }
+
+    const handleEmailClick = () => {
+      const email = 'scholar.liyao@gmail.com'
+      navigator.clipboard.writeText(email).then(() => {
+        tooltipText.value = 'Copied!'
+        setTimeout(() => {
+          tooltipText.value = 'Click to copy'
+        }, 2000)
+        
+        // Open mailto link
+        window.location.href = `mailto:${email}`
+      })
+    }
+
     return {
       details,
       profileWindow,
+      emailLink,
       isOpen,
-      isDragging,
-      position,
-      dragOffset,
       iconStyle,
       startDrag,
-      stopDrag,
       onDrag,
-      onToggle
+      stopDrag,
+      onToggle,
+      handleBlogClick,
+      handleBlogChoice,
+      showBlogModal,
+      tooltipText,
+      handleEmailClick,
+      position
     }
   }
 }
@@ -135,7 +221,8 @@ export default {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  width: 320px;
+  width: 480px;
+  min-height: 420px;
   user-select: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -224,7 +311,11 @@ export default {
 }
 
 .window-content {
-  padding: 20px;
+  padding: 24px;
+  padding-bottom: 32px;
+  height: calc(100% - 52px);
+  display: flex;
+  flex-direction: column;
 }
 
 details {
@@ -248,18 +339,12 @@ summary::-webkit-details-marker {
 }
 
 .avatar-container {
-  display: block;
+  margin: 20px auto 24px;
   width: 120px;
   height: 120px;
-  margin: 0 auto 20px;
   border-radius: 60px;
   overflow: hidden;
-  border: 3px solid var(--primary-color);
-  transition: transform 0.3s ease;
-}
-
-.avatar-container:hover {
-  transform: scale(1.05);
+  border: 2px solid rgba(148, 163, 184, 0.2);
 }
 
 .avatar {
@@ -270,40 +355,134 @@ summary::-webkit-details-marker {
 
 .profile-content {
   text-align: center;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 }
 
-h2 {
+.profile-content h2 {
+  margin: 0 0 12px;
   font-size: 24px;
-  font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 8px;
 }
 
 .welcome {
-  font-size: 16px;
+  margin: 0 0 auto;
   color: var(--text-secondary);
-  margin-bottom: 24px;
+  font-size: 16px;
 }
 
 .social-links {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding: 0 8px;
+}
+
+.social-group {
+  display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 12px;
+  width: 100%;
+  padding: 0 4px;
 }
 
 .social-link {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #e2e8f0;
   text-decoration: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: rgba(30, 41, 59, 0.5);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  min-width: 130px;
+  justify-content: flex-start;
+  height: 36px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex: 1;
+  max-width: 140px;
+}
+
+.social-link .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: #94a3b8;
+}
+
+.social-link .icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.social-link .text {
+  font-size: 0.9em;
+  white-space: nowrap;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: #e2e8f0;
 }
 
 .social-link:hover {
-  color: var(--primary-color);
-  background: var(--bg-primary);
+  background: rgba(51, 65, 85, 0.6);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
+.social-link:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.social-link[data-tooltip] {
+  position: relative;
+}
+
+.social-link[data-tooltip]::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background: rgba(15, 23, 42, 0.95);
+  color: #e2e8f0;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.social-link[data-tooltip]::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: rgba(15, 23, 42, 0.95);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+}
+
+.social-link[data-tooltip]:hover::before,
+.social-link[data-tooltip]:hover::after {
+  opacity: 1;
+  visibility: visible;
 }
 </style>

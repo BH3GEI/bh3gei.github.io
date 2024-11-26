@@ -5,26 +5,26 @@
     </div>
     <div v-else>
       <div v-if="isHome" class="post-list">
-        <h3>所有文章</h3>
-        <div v-for="post in posts" :key="post.file" class="post-item" @click="openPost(post)">
+        <h3>All Posts</h3>
+        <div v-for="post in paginatedPosts" :key="post.file" class="post-item" @click="openPost(post)">
           <h4>{{ post.title }}</h4>
           <p class="post-time">{{ formatDate(post.time) }}</p>
         </div>
         <div class="pagination">
-          <button v-if="currentPage > 1" @click="changePage(currentPage - 1)" class="btn btn-default">上一页</button>
-          <span class="current-page">当前在第 {{ currentPage }} 页</span>
-          <button v-if="hasNextPage" @click="changePage(currentPage + 1)" class="btn btn-default">下一页</button>
+          <button v-if="currentPage > 1" @click="changePage(currentPage - 1)" class="btn btn-default">Previous</button>
+          <span class="current-page">Current Page: {{ currentPage }}</span>
+          <button v-if="hasNextPage" @click="changePage(currentPage + 1)" class="btn btn-default">Next</button>
         </div>
       </div>
       <div v-else class="post-content">
         <h2>{{ currentPost.title }}</h2>
         <div class="post-meta">
-          <span>发布时间：{{ formatDate(currentPost.time) }}</span>
+          <span>Published: {{ formatDate(currentPost.time) }}</span>
         </div>
         <div class="markdown-content" v-html="renderedContent"></div>
         <div class="post-footer">
-          <button @click="backToHome" class="btn btn-default">返回文章列表</button>
-          <a :href="currentPostUrl" target="_blank" class="btn btn-primary">在新窗口打开</a>
+          <button @click="backToHome" class="btn btn-default">Back to Posts</button>
+          <a :href="currentPostUrl" target="_blank" class="btn btn-primary">Open in New Window</a>
         </div>
       </div>
     </div>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
 import showdown from 'showdown'
 import hljs from 'highlight.js'
 
@@ -48,29 +48,38 @@ export default {
     const currentPost = ref(null)
     const postContent = ref('')
     const isHome = ref(true)
+    const renderedHtml = ref('')
 
     const converter = new showdown.Converter({
-      extensions: ['table'],
       simplifiedAutoLink: true,
       simpleLineBreaks: true,
       openLinksInNewWindow: true,
-      noHeaderId: true
+      noHeaderId: true,
+      tables: true
     })
 
-    const renderedContent = computed(() => {
-      if (!postContent.value) return ''
-      const html = converter.makeHtml(postContent.value)
-      // 在下一个 tick 中高亮代码
-      setTimeout(() => {
-        document.querySelectorAll('pre code').forEach((block) => {
-          hljs.highlightBlock(block)
-        })
-      }, 0)
-      return html
-    })
+    const renderedContent = computed(() => renderedHtml.value)
+
+    const updateRenderedContent = async () => {
+      if (!postContent.value) {
+        renderedHtml.value = ''
+        return
+      }
+      renderedHtml.value = converter.makeHtml(postContent.value)
+      await nextTick()
+      document.querySelectorAll('pre code').forEach((block) => {
+        hljs.highlightBlock(block)
+      })
+    }
 
     const hasNextPage = computed(() => {
       return posts.value.length > currentPage.value * POSTS_PER_PAGE
+    })
+
+    const paginatedPosts = computed(() => {
+      const start = (currentPage.value - 1) * POSTS_PER_PAGE
+      const end = start + POSTS_PER_PAGE
+      return posts.value.slice(start, end)
     })
 
     const currentPostUrl = computed(() => {
@@ -80,15 +89,20 @@ export default {
       )}`
     })
 
-    const formatDate = (timestamp) => {
-      return new Date(timestamp * 1000).toLocaleDateString()
+    const formatDate = (dateStr) => {
+      try {
+        return new Date(dateStr).toLocaleDateString()
+      } catch (error) {
+        return 'Invalid Date'
+      }
     }
 
     const fetchPosts = async () => {
       try {
         const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_BASE}/main/list.json`)
         const data = await response.json()
-        posts.value = data
+        // 按时间倒序排序
+        posts.value = data.sort((a, b) => new Date(b.time) - new Date(a.time))
       } catch (error) {
         console.error('Error fetching posts:', error)
       } finally {
@@ -101,9 +115,11 @@ export default {
       try {
         const response = await fetch(`https://raw.githubusercontent.com/${GITHUB_BASE}/main/${post.file}`)
         postContent.value = await response.text()
+        await updateRenderedContent()
       } catch (error) {
         console.error('Error fetching post:', error)
-        postContent.value = '# Error\n无法加载文章内容。'
+        postContent.value = '# Error\nFailed to load article content.'
+        await updateRenderedContent()
       } finally {
         loading.value = false
       }
@@ -119,6 +135,7 @@ export default {
       isHome.value = true
       currentPost.value = null
       postContent.value = ''
+      renderedHtml.value = ''
     }
 
     const changePage = (page) => {
@@ -142,7 +159,8 @@ export default {
       formatDate,
       openPost,
       backToHome,
-      changePage
+      changePage,
+      paginatedPosts
     }
   }
 }
@@ -154,6 +172,7 @@ export default {
   overflow-y: auto;
   padding: 20px;
   color: var(--text-color);
+  background-color: var(--window-bg);
 }
 
 .loading {
@@ -161,6 +180,7 @@ export default {
   justify-content: center;
   align-items: center;
   height: 200px;
+  color: var(--text-secondary);
 }
 
 .post-list {
@@ -168,78 +188,165 @@ export default {
   margin: 0 auto;
 }
 
+.post-list h3 {
+  margin-bottom: 1.5em;
+  font-size: 1.8em;
+  color: var(--primary-color);
+}
+
 .post-item {
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid var(--border-color);
+  background-color: var(--bg-secondary);
+  backdrop-filter: blur(10px);
 }
 
 .post-item:hover {
-  transform: translateX(5px);
+  transform: translateY(-2px);
   border-color: var(--primary-color);
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.post-item h4 {
+  font-size: 1.2em;
+  margin-bottom: 8px;
+  color: var(--text-primary);
 }
 
 .post-time {
   font-size: 0.9em;
-  color: var(--secondary-text-color);
+  color: var(--text-secondary);
 }
 
 .pagination {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 30px;
+  margin-top: 40px;
+  padding: 20px 0;
 }
 
 .current-page {
-  color: var(--secondary-text-color);
+  color: var(--text-secondary);
+  font-size: 0.9em;
 }
 
 .post-content {
   max-width: 800px;
   margin: 0 auto;
+  padding: 20px;
+}
+
+.post-content h2 {
+  font-size: 2em;
+  margin-bottom: 0.5em;
+  color: var(--primary-color);
 }
 
 .post-meta {
-  margin: 10px 0 20px;
-  color: var(--secondary-text-color);
+  margin: 10px 0 30px;
+  color: var(--text-secondary);
+  font-size: 0.9em;
 }
 
 .markdown-content {
-  line-height: 1.6;
+  line-height: 1.8;
+  font-size: 1.1em;
 }
 
 .markdown-content :deep(img) {
   max-width: 100%;
   height: auto;
+  border-radius: 8px;
+  margin: 1.5em 0;
 }
 
 .markdown-content :deep(pre) {
-  padding: 16px;
+  padding: 20px;
+  margin: 1.5em 0;
   overflow: auto;
-  border-radius: 8px;
+  border-radius: 12px;
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-color);
+}
+
+.markdown-content :deep(code) {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
   background-color: var(--code-bg);
 }
 
+.markdown-content :deep(pre code) {
+  padding: 0;
+  background-color: transparent;
+}
+
+.markdown-content :deep(p) {
+  margin: 1.5em 0;
+  color: var(--text-primary);
+}
+
+.markdown-content :deep(h1),
+.markdown-content :deep(h2),
+.markdown-content :deep(h3),
+.markdown-content :deep(h4),
+.markdown-content :deep(h5),
+.markdown-content :deep(h6) {
+  margin: 2em 0 1em;
+  color: var(--primary-color);
+  line-height: 1.4;
+}
+
+.markdown-content :deep(a) {
+  color: var(--primary-color);
+  text-decoration: none;
+  border-bottom: 1px dashed var(--primary-color);
+  transition: all 0.3s ease;
+}
+
+.markdown-content :deep(a:hover) {
+  border-bottom-style: solid;
+}
+
+.markdown-content :deep(blockquote) {
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
+  border-left: 4px solid var(--primary-color);
+  background-color: var(--hover-bg);
+  border-radius: 0 8px 8px 0;
+}
+
+.markdown-content :deep(blockquote p) {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
 .post-footer {
-  margin-top: 30px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
   display: flex;
-  gap: 10px;
+  gap: 15px;
 }
 
 .btn {
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: 10px 20px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
+  font-size: 0.95em;
+  font-weight: 500;
 }
 
 .btn-default {
   background-color: var(--button-bg);
-  color: var(--text-color);
+  color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
@@ -250,6 +357,15 @@ export default {
 }
 
 .btn:hover {
-  opacity: 0.8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow-color);
+}
+
+.btn-default:hover {
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
 }
 </style>

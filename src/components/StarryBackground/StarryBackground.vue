@@ -1,5 +1,5 @@
 <template>
-  <div class="starry-container">
+  <div class="starry-container" @wheel.prevent="handleWheel">
     <canvas ref="canvas" class="starry-background"></canvas>
     <div class="warp-display" :class="{ 'show-tooltip': showTooltip }">
       <div class="warp-text">WARP {{ warpLevel }}</div>
@@ -142,7 +142,6 @@ export default {
       ctx = canvas.value.getContext('2d')
       handleResize()
       window.addEventListener('resize', handleResize)
-      window.addEventListener('wheel', handleWheel)
 
       // 设置背景渐变
       const gradient = ctx.createLinearGradient(0, 0, 0, canvas.value.height)
@@ -155,7 +154,6 @@ export default {
 
     onUnmounted(() => {
       window.removeEventListener('resize', handleResize)
-      window.removeEventListener('wheel', handleWheel)
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId)
       }
@@ -164,7 +162,8 @@ export default {
     return {
       canvas,
       warpLevel,
-      showTooltip
+      showTooltip,
+      handleWheel
     }
   }
 }

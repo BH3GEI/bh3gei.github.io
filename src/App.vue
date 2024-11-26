@@ -58,7 +58,7 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faPuzzlePiece, faRocket, faGlobe } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import StarryBackground from './components/StarryBackground/StarryBackground.vue'
 import OrbitBackground from './components/OrbitBackground/OrbitBackground.vue'
@@ -69,7 +69,7 @@ import BlogWindow from './components/Blog/Blog.vue'
 import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
 
-library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faGithub)
+library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faGithub, faBlog)
 
 export default {
   name: 'App',
@@ -112,23 +112,28 @@ export default {
       })
     }
 
-    const openApp = (component) => {
-      if (component === 'Profile') {
-        showProfile.value = true
-        isProfileMinimized.value = false
-        bringToFront('Profile')
-      } else if (component === '2048') {
-        show2048.value = true
-        is2048Minimized.value = false
-        bringToFront('2048')
-      } else if (component === 'SpaceShooter') {
-        showSpaceShooter.value = true
-        isSpaceShooterMinimized.value = false
-        bringToFront('SpaceShooter')
-      } else if (component === 'Blog') {
-        showBlog.value = true
-        isBlogMinimized.value = false
-        bringToFront('Blog')
+    const openApp = (appName) => {
+      switch (appName) {
+        case 'Profile':
+          showProfile.value = true
+          isProfileMinimized.value = false
+          bringToFront('Profile')
+          break
+        case 'Blog':
+          showBlog.value = true
+          isBlogMinimized.value = false
+          bringToFront('Blog')
+          break
+        case '2048':
+          show2048.value = true
+          is2048Minimized.value = false
+          bringToFront('2048')
+          break
+        case 'SpaceShooter':
+          showSpaceShooter.value = true
+          isSpaceShooterMinimized.value = false
+          bringToFront('SpaceShooter')
+          break
       }
     }
 
@@ -149,7 +154,6 @@ export default {
 
     const closeBlog = () => {
       showBlog.value = false
-      isBlogMinimized.value = false
     }
 
     const minimizeProfile = () => {
@@ -182,6 +186,7 @@ export default {
 
     const restoreBlog = () => {
       isBlogMinimized.value = false
+      bringToFront('Blog')
     }
 
     const bringToFront = (window) => {
@@ -214,19 +219,19 @@ export default {
       is2048Minimized,
       isSpaceShooterMinimized,
       isBlogMinimized,
-      toggleTheme,
       openApp,
+      toggleTheme,
       closeProfile,
-      close2048,
-      closeSpaceShooter,
-      closeBlog,
       minimizeProfile,
-      minimize2048,
-      minimizeSpaceShooter,
-      minimizeBlog,
       restoreProfile,
+      close2048,
+      minimize2048,
       restore2048,
+      closeSpaceShooter,
+      minimizeSpaceShooter,
       restoreSpaceShooter,
+      closeBlog,
+      minimizeBlog,
       restoreBlog,
       bringToFront,
       getZIndex
@@ -248,14 +253,20 @@ export default {
 }
 
 .dark-mode {
-  --primary-color: #60a5fa;
-  --primary-hover: #93c5fd;
+  --primary-color: #7c3aed;  /* 更柔和的紫色 */
+  --primary-hover: #9f67ff;
   --text-primary: #e2e8f0;
   --text-secondary: #94a3b8;
-  --bg-primary: rgba(30, 41, 59, 0.8);
-  --bg-secondary: rgba(30, 41, 59, 0.6);
+  --bg-primary: rgba(17, 24, 39, 0.95);  /* 更深的背景色 */
+  --bg-secondary: rgba(31, 41, 55, 0.85);
   --border-color: rgba(255, 255, 255, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-color: rgba(0, 0, 0, 0.4);
+  
+  /* 新增的变量 */
+  --window-bg: rgba(17, 24, 39, 0.98);
+  --hover-bg: rgba(55, 65, 81, 0.5);
+  --code-bg: rgba(0, 0, 0, 0.3);
+  --button-bg: rgba(55, 65, 81, 0.7);
 }
 
 * {
