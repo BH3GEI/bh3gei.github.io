@@ -47,17 +47,17 @@
               </a>
             </div>
             <div class="social-group">
-              <a href="https://music.163.com/#/user/home?id=6336499362" target="_blank" class="social-link">
+              <a href="https://github.com/BH3GEI/Resume/blob/main/Resume.pdf" target="_blank" class="social-link">
                 <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'headphones']" />
+                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
                 </span>
-                <span class="text">163 Music</span>
+                <span class="text">Resume</span>
               </a>
-              <a href="https://open.spotify.com/user/dixonhill-?si=35067335daa44ff3" target="_blank" class="social-link">
+              <a href="https://b2.kuibu.net/file/imgdisk/2024/11/27/WechatIMG4.png" target="_blank" class="social-link">
                 <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'spotify']" />
+                  <font-awesome-icon :icon="['fab', 'weixin']" />
                 </span>
-                <span class="text">Spotify</span>
+                <span class="text">WeChat</span>
               </a>
               <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
                 <span class="icon">
@@ -78,6 +78,12 @@
                   <font-awesome-icon :icon="['fas', 'robot']" />
                 </span>
                 <span class="text">ChatGPT</span>
+              </a>
+              <a href="https://open.spotify.com/user/dixonhill-?si=35067335daa44ff3" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'spotify']" />
+                </span>
+                <span class="text">Spotify</span>
               </a>
             </div>
           </div>
