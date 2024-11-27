@@ -174,7 +174,7 @@ export default {
       health: 100,
       maxHealth: 100,
       level: 1,
-      baseEnemySpawnInterval: 1000,
+      baseEnemySpawnInterval: 1500, // 增加基础生成间隔
       baseEnemyShootDelay: 2000,
       isGameRunning: false,
       isPaused: false,
@@ -182,13 +182,12 @@ export default {
       gameLoop: null,
       lastEnemySpawn: 0,
       lastMissileSpawn: 0,
-      missileSpawnInterval: 2000,
+      missileSpawnInterval: 3000, // 增加导弹生成间隔
       gameOver: false,
       maximized: false,
       lastFreeEnemySpawn: 0,
-      freeEnemySpawnInterval: 3000,
+      freeEnemySpawnInterval: 4000, // 增加自由移动敌人生成间隔
       particles: [],  // 存储所有粒子
-      maxEnemies: 8,  // 最大敌机数量
       enemySpeedMultiplier: 1,  // 敌机速度倍数
     }
   },
@@ -438,7 +437,7 @@ export default {
       }
 
       // 生成普通敌人
-      if (currentTime - this.lastEnemySpawn > enemySpawnInterval && this.enemies.length < this.maxEnemies) {
+      if (currentTime - this.lastEnemySpawn > enemySpawnInterval) {
         // 根据等级决定是否生成自由移动敌人
         const shouldSpawnFreeEnemy = this.level >= 2 && Math.random() < 0.4
         this.spawnEnemy(shouldSpawnFreeEnemy)
@@ -705,7 +704,7 @@ export default {
       this.drawGame()
 
       // 生成新的敌人
-      if (currentTime - this.lastEnemySpawn > enemySpawnInterval && this.enemies.length < this.maxEnemies) {
+      if (currentTime - this.lastEnemySpawn > enemySpawnInterval) {
         this.spawnEnemy(false)
         this.lastEnemySpawn = currentTime
       }
@@ -732,7 +731,7 @@ export default {
             y: -20,
             width: 10,
             height: 20,
-            speed: Math.min(6, 3 + this.level * 0.5),  // 速度随等级提升但有上限
+            speed: Math.min(5, 2 + this.level * 0.4),  // 降低导弹速度增长
             lastDirectionChange: currentTime,
             directionChangeInterval: 300,  // 更频繁地调整方向
             angle: angle,
