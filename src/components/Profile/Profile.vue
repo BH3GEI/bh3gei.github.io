@@ -53,7 +53,7 @@
                 </span>
                 <span class="text">Resume</span>
               </a>
-              <a href="https://b2.kuibu.net/file/imgdisk/2024/11/27/WechatIMG4.png" target="_blank" class="social-link">
+              <a href="https://github.com/BH3GEI/Resume/blob/main/WechatQR.png" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'weixin']" />
                 </span>
