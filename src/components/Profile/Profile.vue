@@ -79,11 +79,11 @@
                 </span>
                 <span class="text">ChatGPT</span>
               </a>
-              <a href="https://open.spotify.com/user/dixonhill-?si=35067335daa44ff3" target="_blank" class="social-link">
+              <a href="https://x.com/Everywhere0521" target="_blank" class="social-link">
                 <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'spotify']" />
+                  <font-awesome-icon :icon="['fab', 'twitter']" />
                 </span>
-                <span class="text">Spotify</span>
+                <span class="text">Twitter</span>
               </a>
             </div>
           </div>
