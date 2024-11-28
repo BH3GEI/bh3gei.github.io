@@ -5,7 +5,7 @@
     <div class="app-container">
       <MouseTrailer ref="mouseTrailer" />
       <div class="theme-toggle" @click="toggleTheme">
-        <font-awesome-icon :icon="isWarpMode ? 'rocket' : 'globe'" />
+        <font-awesome-icon :icon="['fas', isWarpMode ? 'rocket' : 'globe']" />
       </div>
       <div class="powered-by">
         Powered by <a href="https://vuejs.org" target="_blank">Vue</a> & <a href="https://workers.cloudflare.com" target="_blank">Cloudflare Workers</a>
@@ -38,16 +38,16 @@
       <Dock @open-app="openApp">
         <div class="dock-indicators">
           <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
-            <font-awesome-icon icon="user" />
+            <font-awesome-icon :icon="['fas', 'user']" />
           </div>
           <div class="dock-item" :class="{ 'running': show2048, 'minimized': is2048Minimized }" @click="show2048 ? (is2048Minimized ? restore2048() : bringToFront('2048')) : openApp('2048')">
-            <font-awesome-icon icon="puzzle-piece" />
+            <font-awesome-icon :icon="['fas', 'puzzle-piece']" />
           </div>
           <div class="dock-item" :class="{ 'running': showSpaceShooter, 'minimized': isSpaceShooterMinimized }" @click="showSpaceShooter ? (isSpaceShooterMinimized ? restoreSpaceShooter() : bringToFront('SpaceShooter')) : openApp('SpaceShooter')">
-            <font-awesome-icon icon="rocket" />
+            <font-awesome-icon :icon="['fas', 'rocket']" />
           </div>
           <div class="dock-item" :class="{ 'running': showBlog, 'minimized': isBlogMinimized }" @click="showBlog ? (isBlogMinimized ? restoreBlog() : bringToFront('Blog')) : openApp('Blog')">
-            <font-awesome-icon icon="blog" />
+            <font-awesome-icon :icon="['fas', 'blog']" />
           </div>
         </div>
       </Dock>
@@ -58,8 +58,9 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faPuzzlePiece, faRocket, faGlobe, faGithub } from '@fortawesome/free-solid-svg-icons'
-import { faBlog } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog } from '@fortawesome/free-solid-svg-icons'
+import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import StarryBackground from './components/StarryBackground/StarryBackground.vue'
 import OrbitBackground from './components/OrbitBackground/OrbitBackground.vue'
 import Profile from './components/Profile/Profile.vue'
@@ -81,7 +82,8 @@ export default {
     OrbitBackground,
     Game2048,
     SpaceShooter,
-    BlogWindow
+    BlogWindow,
+    FontAwesomeIcon
   },
   setup() {
     const showProfile = ref(true)
