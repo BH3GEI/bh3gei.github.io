@@ -114,8 +114,8 @@ export default {
     const isOpen = ref(true)
     const isDragging = ref(false)
     const position = ref({
-      x: window.innerWidth / 2 - 250, // 调整为窗口实际宽度的一半
-      y: window.innerHeight / 2 - 300  // 向上移动更多
+      x: window.innerWidth / 2 - 200, // 向右移动50像素
+      y: window.innerHeight / 2 - 300
     })
     const dragOffset = ref({
       x: 0,

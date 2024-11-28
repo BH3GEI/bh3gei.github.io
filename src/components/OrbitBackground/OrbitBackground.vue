@@ -16,6 +16,8 @@ export default {
     let animationFrameId = null
     let mouseX = window.innerWidth / 2
     let mouseY = window.innerHeight / 2
+    let isMouseActive = false
+    let mouseActiveTimeout = null
 
     class Planet {
       constructor(star, orbitRadius, color) {
@@ -129,9 +131,14 @@ export default {
         this.orbitAngle = orbitAngle
         this.orbitSpeed = Math.sqrt(100 / orbitRadius) * 0.004
         this.radius = Math.random() * 8 + 12
-        // 增大恒星质量1000倍以上
         this.mass = Math.random() * 2000 + 400000
         this.active = true
+        
+        // 添加速度属性
+        this.velocity = {
+          x: -Math.sin(this.orbitAngle) * this.orbitSpeed * orbitRadius,
+          y: Math.cos(this.orbitAngle) * this.orbitSpeed * orbitRadius
+        }
         
         const starColors = [
           [255, 200, 150],
@@ -169,17 +176,59 @@ export default {
         addInitialPlanets(this)
       }
 
-      update() {
-        if (this.orbitRadius > 0) {
-          const centerX = canvas.value.width / 2
-          const centerY = canvas.value.height / 2
+      update(otherStars, isMouseActive) {
+        const centerX = canvas.value.width / 2
+        const centerY = canvas.value.height / 2
+
+        if (!isMouseActive && this.orbitRadius > 0) {
+          // 当鼠标不活跃时，逐渐恢复到原始轨道
+          const targetX = centerX + Math.cos(this.orbitAngle) * this.orbitRadius
+          const targetY = centerY + Math.sin(this.orbitAngle) * this.orbitRadius
+          
+          this.x += (targetX - this.x) * 0.02
+          this.y += (targetY - this.y) * 0.02
           
           this.orbitAngle += this.orbitSpeed
-          
-          this.x = centerX + Math.cos(this.orbitAngle) * this.orbitRadius
-          this.y = centerY + Math.sin(this.orbitAngle) * this.orbitRadius
+        } else {
+          // 计算其他恒星的引力
+          otherStars.forEach(star => {
+            if (star !== this) {
+              const dx = this.x - star.x
+              const dy = this.y - star.y
+              const dist = Math.sqrt(dx * dx + dy * dy)
+              const minDist = 100 // 最小距离以防止过强引力
+              const force = star.mass / (Math.max(dist, minDist) * Math.max(dist, minDist))
+              const angle = Math.atan2(dy, dx)
+              
+              this.velocity.x -= Math.cos(angle) * force * 0.0002
+              this.velocity.y -= Math.sin(angle) * force * 0.0002
+            }
+          })
+
+          // 计算鼠标引力
+          if (isMouseActive) {
+            const dx = this.x - mouseX
+            const dy = this.y - mouseY
+            const dist = Math.sqrt(dx * dx + dy * dy)
+            const minDist = 100
+            const mouseForce = this.mass * 0.5 / (Math.max(dist, minDist) * Math.max(dist, minDist))
+            const mouseAngle = Math.atan2(dy, dx)
+            
+            this.velocity.x -= Math.cos(mouseAngle) * mouseForce * 0.001
+            this.velocity.y -= Math.sin(mouseAngle) * mouseForce * 0.001
+          }
+
+          // 应用速度
+          this.x += this.velocity.x
+          this.y += this.velocity.y
+
+          // 添加阻尼以防止速度过快
+          const damping = 0.995
+          this.velocity.x *= damping
+          this.velocity.y *= damping
         }
 
+        // 绘制恒星
         ctx.beginPath()
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
         ctx.fillStyle = this.color
@@ -194,6 +243,7 @@ export default {
         ctx.fillStyle = glow
         ctx.fill()
 
+        // 更新行星
         this.planets = this.planets.filter(planet => planet.active)
         this.planets.forEach(planet => {
           planet.update()
@@ -204,6 +254,17 @@ export default {
     const handleMouseMove = (e) => {
       mouseX = e.clientX
       mouseY = e.clientY
+      isMouseActive = true
+      
+      // 重置超时
+      if (mouseActiveTimeout) {
+        clearTimeout(mouseActiveTimeout)
+      }
+      
+      // 如果鼠标停止移动3秒，认为不再活跃
+      mouseActiveTimeout = setTimeout(() => {
+        isMouseActive = false
+      }, 3000)
     }
 
     const resizeCanvas = () => {
@@ -223,7 +284,7 @@ export default {
       ctx.fillRect(0, 0, canvas.value.width, canvas.value.height)
       
       solarSystems = solarSystems.filter(system => system.active)
-      solarSystems.forEach(system => system.update())
+      solarSystems.forEach(system => system.update(solarSystems, isMouseActive))
       
       // 增加流浪行星生成概率和最大数量限制
       if (Math.random() < 0.02 && solarSystems[0].planets.length < 50) {
@@ -258,8 +319,9 @@ export default {
         
         const star1 = new SolarSystem(centerX, centerY, orbitRadius, 0)
         const star2 = new SolarSystem(centerX, centerY, orbitRadius, Math.PI)
+        const star3 = new SolarSystem(centerX, centerY, orbitRadius * 1.5, Math.PI * 1.5)
         
-        solarSystems.push(star1, star2)
+        solarSystems.push(star1, star2, star3)
         
         animate()
       }
