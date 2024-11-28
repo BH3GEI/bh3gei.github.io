@@ -58,8 +58,8 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog } from '@fortawesome/free-solid-svg-icons'
-import { faGithub } from '@fortawesome/free-brands-svg-icons'
+import { faUser, faPuzzlePiece, faRocket, faGlobe, faGithub } from '@fortawesome/free-solid-svg-icons'
+import { faBlog } from '@fortawesome/free-solid-svg-icons'
 import StarryBackground from './components/StarryBackground/StarryBackground.vue'
 import OrbitBackground from './components/OrbitBackground/OrbitBackground.vue'
 import Profile from './components/Profile/Profile.vue'
@@ -318,17 +318,20 @@ html, body {
 
 .powered-by {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  font-size: 0.8em;
-  color: var(--text-secondary);
-  text-decoration: none;
-  z-index: 10; /* 降低z-index */
-  transition: color 0.3s ease;
+  top: 1rem;
+  left: 1rem;
+  font-size: 0.8rem;
+  opacity: 0.7;
+  z-index: 1;
 }
 
-.powered-by:hover {
-  color: var(--primary-color);
+.powered-by a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.powered-by a:hover {
+  text-decoration: underline;
 }
 
 .dark-mode body {
