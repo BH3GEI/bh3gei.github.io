@@ -114,7 +114,7 @@ export default {
     const isOpen = ref(true)
     const isDragging = ref(false)
     const position = ref({
-      x: window.innerWidth / 2 - 200, // 向右移动50像素
+      x: window.innerWidth / 2 - 225, // 向右移动50像素
       y: window.innerHeight / 2 - 300
     })
     const dragOffset = ref({
