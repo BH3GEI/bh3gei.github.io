@@ -79,7 +79,7 @@
                 </span>
                 <span class="text">ChatGPT</span>
               </a>
-              <a href="https://x.com/Everywhere0521" target="_blank" class="social-link">
+              <a href="https://x.com/BH3GEI_CN" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'twitter']" />
                 </span>
