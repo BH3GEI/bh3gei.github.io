@@ -7,9 +7,9 @@
       <div class="theme-toggle" @click="toggleTheme">
         <font-awesome-icon :icon="isWarpMode ? 'rocket' : 'globe'" />
       </div>
-      <a href="https://vue.dev" target="_blank" class="powered-by">
-        Powered by Vue & Cloudflare Workers
-      </a>
+      <div class="powered-by">
+        Powered by <a href="https://vuejs.org" target="_blank">Vue</a> & <a href="https://workers.cloudflare.com" target="_blank">Cloudflare Workers</a>
+      </div>
       <Profile v-if="showProfile" 
         :class="{ 'minimized': isProfileMinimized }" 
         :style="{ zIndex: getZIndex('Profile') }"
