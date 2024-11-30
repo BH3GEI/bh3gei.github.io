@@ -56,7 +56,7 @@
                 <span class="text">Resume</span>
               </a>
 
-              <a href="https://gist.github.com/BH3GEI/ca9d2c195319897f8194577a40aada59#file-wechat-md" target="_blank" class="social-link">
+              <a @click.prevent="handleWechatClick" href="#" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'weixin']" />
                 </span>
@@ -77,13 +77,12 @@
             </div>
             <div class="social-group">
 
-              <a href="https://stratoproxy.stratosphericus.workers.dev" target="_blank" class="social-link">
+              <a href="#" @click.prevent="handleProxyClick" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'shield-halved']" />
                 </span>
                 <span class="text">Web Proxy</span>
               </a>
-
 
               <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
                 <span class="icon">
@@ -91,7 +90,6 @@
                 </span>
                 <span class="text">Telegram</span>
               </a>
-
 
               <a href="https://x.com/BH3GEI_CN" target="_blank" class="social-link">
                 <span class="icon">
@@ -109,6 +107,7 @@
       @choice="handleBlogChoice"
     />
     <ResumeChoiceModal v-if="showResumeModal" @close="showResumeModal = false" @choice="handleResumeChoice" />
+    <WechatModal v-if="showWechatModal" @close="showWechatModal = false" />
   </div>
 </template>
 
@@ -117,14 +116,16 @@ import { ref, computed, onMounted } from 'vue'
 import { marked } from 'marked'
 import NavigationModal from '../Modal/NavigationModal.vue'
 import ResumeChoiceModal from '../Modal/ResumeChoiceModal.vue'
+import WechatModal from '../Modal/WechatModal.vue'
 
 export default {
   name: 'ProfileWindow',
   components: {
     NavigationModal,
-    ResumeChoiceModal
+    ResumeChoiceModal,
+    WechatModal
   },
-  emits: ['close', 'minimize', 'click', 'open-blog', 'navigate-blog'],
+  emits: ['close', 'minimize', 'click', 'open-blog', 'navigate-blog', 'open-proxy'],
   setup(props, { emit }) {
     const details = ref(null)
     const profileWindow = ref(null)
@@ -144,6 +145,7 @@ export default {
     const resumeTooltip = ref('Click to choose language')
     const showBlogModal = ref(false)
     const showResumeModal = ref(false)
+    const showWechatModal = ref(false)
 
     const iconStyle = computed(() => ({
       transform: isOpen.value ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -242,6 +244,14 @@ export default {
       showResumeModal.value = false
     }
 
+    const handleWechatClick = () => {
+      showWechatModal.value = true
+    }
+
+    const handleProxyClick = () => {
+      emit('open-proxy')
+    }
+
     const readmeContent = ref('Loading...')
 
     onMounted(async () => {
@@ -286,6 +296,9 @@ export default {
       handleResumeClick,
       handleResumeChoice,
       showResumeModal,
+      handleWechatClick,
+      showWechatModal,
+      handleProxyClick,
       position,
       readmeContent
     }
