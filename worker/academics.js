@@ -51,20 +51,50 @@ async function handleRequest(request) {
         }
 
         .header {
-            text-align: center;
+            border-bottom: 1px solid #d0d7de;
             margin-bottom: 2em;
+            padding-bottom: 1em;
         }
 
         .header h1 {
             margin-bottom: 0.5em;
+            font-size: 3em;
+            font-weight: 800;
+            line-height: 1.25;
+            text-align: left;
+            color: #000000;
+            letter-spacing: -0.02em;
         }
 
         .header .nav {
-            margin-bottom: 2em;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5em;
+            margin: 1em 0;
+            font-size: 0.9em;
         }
 
-        .header .nav a {
-            margin: 0 1em;
+        .header .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+        }
+
+        .header .nav-item a {
+            font-weight: 500;
+            min-width: 50px;
+        }
+
+        .header .nav-description {
+            color: #57606a;
+        }
+
+        .markdown-body img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 1em auto;
         }
     </style>
 </head>
@@ -73,15 +103,29 @@ async function handleRequest(request) {
         <div class="header">
             <h1>Yao Li</h1>
             <div class="nav">
-                <a href="/">Home</a>
-                <a href="https://github.com/bh3gei">GitHub</a>
-                <a href="mailto:scholar.liyao@gmail.com">Email</a>
+                <div class="nav-item">
+                    <a href="https://bh3gei.github.io/">Home</a>
+                    <span class="nav-description">Personal Website</span>
+                </div>
+                <div class="nav-item">
+                    <a href="https://github.com/bh3gei">GitHub</a>
+                    <span class="nav-description">View My Projects & Code</span>
+                </div>
+                <div class="nav-item">
+                    <a href="mailto:scholar.liyao@gmail.com">Email</a>
+                    <span class="nav-description">Contact: scholar.liyao@gmail.com</span>
+                </div>
             </div>
         </div>
         <div id="content"></div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
+        // 配置 marked 选项
+        marked.setOptions({
+            breaks: true,  // 支持 GitHub 风格的换行
+            gfm: true,    // 启用 GitHub 风格的 Markdown
+        });
         document.getElementById('content').innerHTML = marked.parse(\`${markdown}\`);
     </script>
 </body>
