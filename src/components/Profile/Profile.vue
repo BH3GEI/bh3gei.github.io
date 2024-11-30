@@ -77,12 +77,13 @@
             </div>
             <div class="social-group">
 
-              <a href="#" @click.prevent="handleProxyClick" class="social-link">
+              <a href="https://stratoproxy.stratosphericus.workers.dev" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'shield-halved']" />
                 </span>
                 <span class="text">Web Proxy</span>
               </a>
+
 
               <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
                 <span class="icon">
@@ -90,6 +91,7 @@
                 </span>
                 <span class="text">Telegram</span>
               </a>
+
 
               <a href="https://x.com/BH3GEI_CN" target="_blank" class="social-link">
                 <span class="icon">
@@ -125,7 +127,7 @@ export default {
     ResumeChoiceModal,
     WechatModal
   },
-  emits: ['close', 'minimize', 'click', 'open-blog', 'navigate-blog', 'open-proxy'],
+  emits: ['close', 'minimize', 'click', 'open-blog', 'navigate-blog'],
   setup(props, { emit }) {
     const details = ref(null)
     const profileWindow = ref(null)
@@ -248,10 +250,6 @@ export default {
       showWechatModal.value = true
     }
 
-    const handleProxyClick = () => {
-      emit('open-proxy')
-    }
-
     const readmeContent = ref('Loading...')
 
     onMounted(async () => {
@@ -298,7 +296,6 @@ export default {
       showResumeModal,
       handleWechatClick,
       showWechatModal,
-      handleProxyClick,
       position,
       readmeContent
     }
