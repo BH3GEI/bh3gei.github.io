@@ -42,7 +42,7 @@
         @close="closeWebProxy"
         @minimize="minimizeWebProxy"
         @click.self="bringToFront('WebProxy')" />
-      <Dock @open-app="openApp">
+      <Dock v-if="!isMobile" @open-app="openApp">
         <div class="dock-indicators">
           <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
             <font-awesome-icon :icon="['fas', 'user']" />
@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
@@ -112,6 +112,21 @@ export default {
     const isWebProxyMinimized = ref(false)
     const activeWindow = ref('Profile')
     const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy'])
+    const isMobile = ref(false);
+
+    const checkMobile = () => {
+      isMobile.value = window.innerWidth <= 768;
+    };
+
+    onMounted(() => {
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
+      document.documentElement.classList.add('dark-mode')
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkMobile);
+    });
 
     const toggleTheme = () => {
       import('vue').then(({ nextTick }) => {
@@ -239,10 +254,6 @@ export default {
       return windowOrder.value.indexOf(window) + 10
     }
 
-    onMounted(() => {
-      document.documentElement.classList.add('dark-mode')
-    })
-
     return {
       showProfile,
       show2048,
@@ -274,7 +285,8 @@ export default {
       minimizeWebProxy,
       restoreWebProxy,
       bringToFront,
-      getZIndex
+      getZIndex,
+      isMobile
     }
   }
 }
@@ -464,5 +476,12 @@ html, body {
   width: 100vw !important;
   height: 100vh !important;
   z-index: 20 !important; /* 确保最大化的窗口在最上层 */
+}
+
+@media (max-width: 768px) {
+  .theme-toggle,
+  .powered-by {
+    display: none;
+  }
 }
 </style>

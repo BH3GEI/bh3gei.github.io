@@ -1,12 +1,15 @@
 <template>
-  <div class="profile-window" ref="profileWindow" :style="{ left: position.x + 'px', top: position.y + 'px' }" @click="$emit('click', $event)">
-    <div class="title-bar" @mousedown.prevent="startDrag">
+  <div :class="['profile-window', { 'mobile-view': isMobile }]" ref="profileWindow" :style="mobileStyle">
+    <div v-if="!isMobile" class="title-bar" @mousedown.prevent="startDrag">
       <div class="window-controls">
         <button class="control-btn close" @click="$emit('close')"></button>
         <button class="control-btn minimize" @click="$emit('minimize')"></button>
       </div>
       <span>Profile</span>
       <div class="spacer"></div>
+    </div>
+    <div v-if="isMobile" class="mobile-notice">
+      Recommended: Visit on PC for full experience
     </div>
     <div class="window-content">
       <details open @toggle="onToggle" ref="details">
@@ -119,7 +122,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { marked } from 'marked'
 import NavigationModal from '../Modal/NavigationModal.vue'
 import ResumeChoiceModal from '../Modal/ResumeChoiceModal.vue'
@@ -153,6 +156,23 @@ export default {
     const showBlogModal = ref(false)
     const showResumeModal = ref(false)
     const showWechatModal = ref(false)
+    const isMobile = ref(false);
+    const mobileStyle = computed(() => {
+      if (isMobile.value) {
+        return {
+          position: 'fixed',
+          left: '0',
+          top: '0',
+          width: '100%',
+          height: '100%',
+          transform: 'none'
+        };
+      }
+      return {
+        left: position.value.x + 'px',
+        top: position.value.y + 'px'
+      };
+    });
 
     const iconStyle = computed(() => ({
       transform: isOpen.value ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -257,7 +277,13 @@ export default {
 
     const readmeContent = ref('Loading...')
 
+    const checkMobile = () => {
+      isMobile.value = window.innerWidth <= 768;
+    };
+
     onMounted(async () => {
+      checkMobile();
+      window.addEventListener('resize', checkMobile);
       try {
         const response = await fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/README.md')
         const text = await response.text()
@@ -277,6 +303,10 @@ export default {
           y: (windowHeight - profileWindow.offsetHeight) / 2
         }
       }
+    })
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', checkMobile);
     })
 
     return {
@@ -302,7 +332,9 @@ export default {
       handleWechatClick,
       showWechatModal,
       position,
-      readmeContent
+      readmeContent,
+      isMobile,
+      mobileStyle
     }
   }
 }
@@ -617,5 +649,103 @@ summary::-webkit-details-marker {
 .social-link[data-tooltip]:hover::after {
   opacity: 1;
   visibility: visible;
+}
+
+.mobile-view {
+  position: fixed !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: rgba(15, 23, 42, 0.95) !important;
+  animation: none !important;
+  transform: none !important;
+  transition: none !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  backdrop-filter: blur(20px) !important;
+}
+
+.mobile-view .window-content {
+  padding: 20px;
+  height: auto;
+  overflow: visible;
+  color: #e2e8f0;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.mobile-view .profile-content {
+  padding: 0 15px;
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.mobile-view .readme-content {
+  color: #e2e8f0;
+  width: 100%;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.mobile-view .social-links {
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.mobile-view .social-group {
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
+}
+
+.mobile-view .social-link {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  flex: 1;
+  min-width: 120px;
+  max-width: 160px;
+}
+
+@media (max-width: 768px) {
+  .profile-window {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .social-link {
+    padding: 12px 15px;
+  }
+
+  .mobile-view .readme-content :deep(pre),
+  .mobile-view .readme-content :deep(code) {
+    max-width: 100%;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+}
+
+@media (max-width: 480px) {
+  .mobile-view .window-content {
+    padding: 15px 10px;
+  }
+
+  .mobile-view .social-link {
+    min-width: 100px;
+    max-width: 140px;
+    padding: 10px;
+  }
+
+  .mobile-view .profile-content h2 {
+    font-size: 20px;
+  }
 }
 </style>
