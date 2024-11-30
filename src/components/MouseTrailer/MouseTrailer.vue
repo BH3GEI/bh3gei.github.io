@@ -7,7 +7,11 @@
       transform: `translate(${trailX}px, ${trailY}px)`,
     }"
   >
-    🛸
+    <div class="cursor-container">
+      <div class="click-dot"></div>
+      <div class="click-ring"></div>
+      <div class="spaceship">🛸</div>
+    </div>
   </div>
 </template>
 
@@ -84,50 +88,91 @@ onUnmounted(() => {
   top: -12px;
   left: -12px;
   z-index: 10000;
-  font-size: 24px;
   pointer-events: none;
   will-change: transform;
-  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
-  animation: float 3s ease-in-out infinite;
-  transition: filter 0.3s ease;
 }
 
-.mouse-trailer.in-gravity {
+.cursor-container {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.click-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+.click-ring {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: breathe 2s ease-in-out infinite;
+}
+
+.spaceship {
+  position: absolute;
+  bottom: -20px;
+  right: -20px;
+  font-size: 20px;
+  filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
+    transform: translateY(0);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(147, 197, 253, 0.7));
+    transform: translateY(-2px);
+  }
+}
+
+.mouse-trailer.in-gravity .spaceship {
   filter: drop-shadow(0 0 15px rgba(147, 197, 253, 0.8));
   animation: none;
 }
 
-@keyframes float {
-  0% {
-    filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
-  }
-  50% {
-    filter: drop-shadow(0 0 15px rgba(147, 197, 253, 0.7));
-  }
-  100% {
-    filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
-  }
-}
-
-:deep(.dark-mode) .mouse-trailer {
+:deep(.dark-mode) .spaceship {
   filter: drop-shadow(0 0 10px rgba(30, 58, 138, 0.5));
   animation: floatDark 3s ease-in-out infinite;
 }
 
-:deep(.dark-mode) .mouse-trailer.in-gravity {
+:deep(.dark-mode) .mouse-trailer.in-gravity .spaceship {
   filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
   animation: none;
 }
 
 @keyframes floatDark {
-  0% {
+  0%, 100% {
     filter: drop-shadow(0 0 10px rgba(30, 58, 138, 0.5));
+    transform: translateY(0);
   }
   50% {
     filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.7));
-  }
-  100% {
-    filter: drop-shadow(0 0 10px rgba(30, 58, 138, 0.5));
+    transform: translateY(-2px);
   }
 }
 </style>
