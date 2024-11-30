@@ -1,16 +1,18 @@
 <template>
   <div 
     v-if="isVisible"
-    class="mouse-trailer"
-    :class="{ 'in-gravity': gravityForce.inRange }"
+    class="mouse-trailer-container"
     :style="{
       transform: `translate(${trailX}px, ${trailY}px)`,
+      opacity: isOverIframe ? 0 : 1
     }"
   >
-    <div class="cursor-container">
+    <div class="cursor-wrapper">
       <div class="click-dot"></div>
       <div class="click-ring"></div>
-      <div class="spaceship">🛸</div>
+    </div>
+    <div class="spaceship-wrapper">
+      <div class="spaceship" :class="{ 'in-gravity': gravityForce.inRange }">🛸</div>
     </div>
   </div>
 </template>
@@ -24,6 +26,7 @@ const mouseY = ref(0)
 const trailX = ref(0)
 const trailY = ref(0)
 const gravityForce = ref({ x: 0, y: 0, inRange: false })
+const isOverIframe = ref(false);
 
 let animationFrameId = null
 const speed = 0.35
@@ -63,18 +66,25 @@ const handleGravity = (force) => {
   gravityForce.value = force
 }
 
+const checkIfOverIframe = (e) => {
+  const element = document.elementFromPoint(e.clientX, e.clientY);
+  isOverIframe.value = element && element.tagName === 'IFRAME';
+};
+
 defineExpose({
   handleGravity
 })
 
 onMounted(() => {
   window.addEventListener('mousemove', handleMouseMove)
+  window.addEventListener('mousemove', checkIfOverIframe);
   window.addEventListener('mouseleave', handleMouseLeave)
   updatePosition()
 })
 
 onUnmounted(() => {
   window.removeEventListener('mousemove', handleMouseMove)
+  window.removeEventListener('mousemove', checkIfOverIframe);
   window.removeEventListener('mouseleave', handleMouseLeave)
   if (animationFrameId) {
     cancelAnimationFrame(animationFrameId)
@@ -83,16 +93,17 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.mouse-trailer {
+.mouse-trailer-container {
   position: fixed;
   top: -12px;
   left: -12px;
   z-index: 10000;
-  pointer-events: none;
+  pointer-events: none !important;
   will-change: transform;
+  mix-blend-mode: difference;
 }
 
-.cursor-container {
+.cursor-wrapper {
   position: relative;
   width: 24px;
   height: 24px;
@@ -107,22 +118,26 @@ onUnmounted(() => {
   height: 4px;
   background: #ffffff;
   border-radius: 50%;
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  box-shadow: none;
 }
 
 .click-ring {
   position: absolute;
   width: 16px;
   height: 16px;
-  border: 1.5px solid rgba(255, 255, 255, 0.8);
+  border: 1.5px solid #ffffff;
   border-radius: 50%;
   animation: breathe 2s ease-in-out infinite;
 }
 
-.spaceship {
+.spaceship-wrapper {
+  mix-blend-mode: normal;
   position: absolute;
   bottom: -20px;
   right: -20px;
+}
+
+.spaceship {
   font-size: 20px;
   filter: drop-shadow(0 0 10px rgba(96, 165, 250, 0.5));
   animation: float 3s ease-in-out infinite;
@@ -150,7 +165,7 @@ onUnmounted(() => {
   }
 }
 
-.mouse-trailer.in-gravity .spaceship {
+.spaceship.in-gravity {
   filter: drop-shadow(0 0 15px rgba(147, 197, 253, 0.8));
   animation: none;
 }
@@ -160,7 +175,7 @@ onUnmounted(() => {
   animation: floatDark 3s ease-in-out infinite;
 }
 
-:deep(.dark-mode) .mouse-trailer.in-gravity .spaceship {
+:deep(.dark-mode) .spaceship.in-gravity {
   filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8));
   animation: none;
 }

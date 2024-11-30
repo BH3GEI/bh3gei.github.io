@@ -49,20 +49,6 @@
             </div>
             <div class="social-group">
 
-              <a @click.prevent="handleResumeClick" href="#" class="social-link" ref="resumeLink" :data-tooltip="resumeTooltip">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
-                </span>
-                <span class="text">Resume</span>
-              </a>
-
-              <a @click.prevent="handleWechatClick" href="#" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'weixin']" />
-                </span>
-                <span class="text">WeChat</span>
-              </a>
-
               <a href="mailto:scholar.liyao@gmail.com" 
                 class="social-link" 
                 @click.prevent="handleEmailClick" 
@@ -74,16 +60,35 @@
                 <span class="text">Email</span>
               </a>
 
+              <a @click.prevent="handleResumeClick" href="#" class="social-link" ref="resumeLink" :data-tooltip="resumeTooltip">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
+                </span>
+                <span class="text">Resume</span>
+              </a>
+
+
+
+
+
+              <a href="https://linkedin.com/in/yao-li2026" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'briefcase']" />
+                </span>
+                <span class="text">Linkedin</span>
+              </a>
+
             </div>
             <div class="social-group">
 
-              <a href="https://stratoproxy.stratosphericus.workers.dev" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'shield-halved']" />
-                </span>
-                <span class="text">Web Proxy</span>
-              </a>
 
+
+              <a @click.prevent="handleWechatClick" href="#" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'weixin']" />
+                </span>
+                <span class="text">WeChat</span>
+              </a>
 
               <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
                 <span class="icon">
@@ -136,7 +141,7 @@ export default {
     const isOpen = ref(true)
     const isDragging = ref(false)
     const position = ref({
-      x: window.innerWidth / 2 - 240, // 窗口宽度的一半 (480/2 = 240)
+      x: window.innerWidth / 2 - 300, // 窗口宽度的一半 (480/2 = 240)
       y: window.innerHeight / 2 - 300
     })
     const dragOffset = ref({

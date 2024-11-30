@@ -11,7 +11,7 @@ import { config } from '@fortawesome/fontawesome-svg-core'
 import '@fortawesome/fontawesome-svg-core/styles.css'
 
 // Import icons
-import { faBlog, faEnvelope, faSun, faMoon, faUser, faPuzzlePiece, faRocket, faGlobe, faHeadphones, faMusic, faPaperPlane, faShieldHalved, faRobot, faFilePdf } from '@fortawesome/free-solid-svg-icons'
+import { faBlog, faEnvelope, faSun, faMoon, faUser, faPuzzlePiece, faRocket, faGlobe, faHeadphones, faMusic, faPaperPlane, faShieldHalved, faRobot, faFilePdf, faBriefcase } from '@fortawesome/free-solid-svg-icons'
 import { faGithub, faTwitter, faTelegram, faWeixin } from '@fortawesome/free-brands-svg-icons'
 
 // Prevent Font Awesome from adding its CSS since we did it manually above
@@ -21,7 +21,7 @@ config.autoAddCss = false
 const solidIcons = [
   faBlog, faEnvelope, faSun, faMoon, faUser, faPuzzlePiece, 
   faRocket, faGlobe, faHeadphones, faMusic, faPaperPlane, 
-  faShieldHalved, faRobot, faFilePdf
+  faShieldHalved, faRobot, faFilePdf, faBriefcase
 ]
 
 const brandIcons = [faGithub, faTwitter, faTelegram, faWeixin]

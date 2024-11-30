@@ -21,7 +21,7 @@
           </button>
           <button class="modal-btn" @click="$emit('choice', 'cn')">
             <font-awesome-icon icon="file-pdf" />
-            中文
+            简体中文
           </button>
         </div>
       </div>

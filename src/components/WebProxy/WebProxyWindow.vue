@@ -19,19 +19,21 @@
         <div class="window-controls">
           <button class="control-btn close" @click="$emit('close')"></button>
           <button class="control-btn minimize" @click="$emit('minimize')"></button>
-          <button class="control-btn maximize" @click="toggleMaximize"></button>
         </div>
-        <span>Web Proxy</span>
+        <span style="flex: 1; text-align: center;">Web Proxy</span>
         <div class="controls"></div>
       </div>
       <div class="proxy-content" :class="{ maximized }">
         <iframe
           ref="proxyFrame"
           :src="proxyUrl"
+          @load="handleIframeLoad"
           :style="{
             transform: `scale(${scale})`,
             transformOrigin: 'top left',
           }"
+          style="pointer-events: auto !important;"
+          sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
         ></iframe>
       </div>
     </div>
@@ -131,6 +133,27 @@ export default {
       this.$nextTick(() => {
         this.updateScale()
       })
+    },
+    handleIframeLoad() {
+      try {
+        const iframe = this.$refs.proxyFrame;
+        if (iframe && iframe.contentWindow) {
+          iframe.contentWindow.addEventListener('click', (e) => {
+            if (e.target.tagName === 'A' && e.target.target === '_blank') {
+              e.preventDefault();
+              iframe.src = e.target.href;
+            }
+          }, true);
+
+          // 重写window.open
+          iframe.contentWindow.open = (url) => {
+            iframe.src = url;
+            return null;
+          };
+        }
+      } catch (error) {
+        console.warn('Failed to setup iframe handlers:', error);
+      }
     }
   },
   mounted() {
@@ -241,18 +264,6 @@ export default {
 .control-btn.minimize::before {
   content: '−';
   color: #5c4002;
-  font-size: 14px;
-  line-height: 1;
-}
-
-.control-btn.maximize {
-  background: #28c840;
-  border: 1px solid #1aab29;
-}
-
-.control-btn.maximize::before {
-  content: '+';
-  color: #0b4003;
   font-size: 14px;
   line-height: 1;
 }
