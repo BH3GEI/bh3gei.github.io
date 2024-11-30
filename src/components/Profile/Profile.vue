@@ -24,18 +24,45 @@
           <!-- <p class="welcome">Welcome to my space!</p> -->
           <div class="social-links">
             <div class="social-group">
-              <a @click.prevent="handleBlogClick" href="#" class="social-link">
+
+              <a href="https://gist.github.com/BH3GEI/98c155ccc3435ff79d34e63085c745a0#file-academics-md" target="_blank" class="social-link">
                 <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'blog']" />
+                  <font-awesome-icon :icon="['fas', 'user']" />
                 </span>
-                <span class="text">Blog</span>
+                <span class="text">About</span>
               </a>
+
               <a href="https://github.com/bh3gei" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'github']" />
                 </span>
                 <span class="text">Github</span>
               </a>
+
+              <a @click.prevent="handleBlogClick" href="#" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'blog']" />
+                </span>
+                <span class="text">Blog</span>
+              </a>
+
+            </div>
+            <div class="social-group">
+
+              <a @click.prevent="handleResumeClick" href="#" class="social-link" ref="resumeLink" :data-tooltip="resumeTooltip">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
+                </span>
+                <span class="text">Resume</span>
+              </a>
+
+              <a href="https://gist.github.com/BH3GEI/ca9d2c195319897f8194577a40aada59#file-wechat-md" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'weixin']" />
+                </span>
+                <span class="text">WeChat</span>
+              </a>
+
               <a href="mailto:scholar.liyao@gmail.com" 
                 class="social-link" 
                 @click.prevent="handleEmailClick" 
@@ -45,29 +72,6 @@
                   <font-awesome-icon :icon="['fas', 'envelope']" />
                 </span>
                 <span class="text">Email</span>
-              </a>
-            </div>
-            <div class="social-group">
-
-              <a href="https://github.com/BH3GEI/Resume/blob/main/Resume.pdf" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
-                </span>
-                <span class="text">Resume</span>
-              </a>
-
-              <a href="https://github.com/BH3GEI/Resume/blob/main/WechatQR.png" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'weixin']" />
-                </span>
-                <span class="text">WeChat</span>
-              </a>
-              
-              <a href="https://chat-gpt-next-web-ozpr.vercel.app/" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'robot']" />
-                </span>
-                <span class="text">ChatGPT</span>
               </a>
 
             </div>
@@ -104,6 +108,7 @@
       v-model="showBlogModal"
       @choice="handleBlogChoice"
     />
+    <ResumeChoiceModal v-if="showResumeModal" @close="showResumeModal = false" @choice="handleResumeChoice" />
   </div>
 </template>
 
@@ -111,17 +116,20 @@
 import { ref, computed, onMounted } from 'vue'
 import { marked } from 'marked'
 import NavigationModal from '../Modal/NavigationModal.vue'
+import ResumeChoiceModal from '../Modal/ResumeChoiceModal.vue'
 
 export default {
   name: 'ProfileWindow',
   components: {
-    NavigationModal
+    NavigationModal,
+    ResumeChoiceModal
   },
   emits: ['close', 'minimize', 'click', 'open-blog', 'navigate-blog'],
   setup(props, { emit }) {
     const details = ref(null)
     const profileWindow = ref(null)
     const emailLink = ref(null)
+    const resumeLink = ref(null)
     const isOpen = ref(true)
     const isDragging = ref(false)
     const position = ref({
@@ -133,7 +141,9 @@ export default {
       y: 0
     })
     const tooltipText = ref('Click to copy')
+    const resumeTooltip = ref('Click to choose language')
     const showBlogModal = ref(false)
+    const showResumeModal = ref(false)
 
     const iconStyle = computed(() => ({
       transform: isOpen.value ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -209,6 +219,29 @@ export default {
       })
     }
 
+    const handleResumeClick = () => {
+      showResumeModal.value = true
+    }
+
+    const handleResumeChoice = (choice) => {
+      let url = ''
+      switch(choice) {
+        case 'en':
+          url = 'https://github.com/BH3GEI/Resume/blob/main/Resume.pdf'
+          break
+        case 'jp':
+          url = 'https://github.com/BH3GEI/Resume/blob/main/Resume_JP.pdf'
+          break
+        case 'cn':
+          url = 'https://github.com/BH3GEI/Resume/blob/main/Resume_CN.pdf'
+          break
+      }
+      if (url) {
+        window.open(url, '_blank')
+      }
+      showResumeModal.value = false
+    }
+
     const readmeContent = ref('Loading...')
 
     onMounted(async () => {
@@ -237,6 +270,7 @@ export default {
       details,
       profileWindow,
       emailLink,
+      resumeLink,
       isOpen,
       iconStyle,
       startDrag,
@@ -247,7 +281,11 @@ export default {
       handleBlogChoice,
       showBlogModal,
       tooltipText,
+      resumeTooltip,
       handleEmailClick,
+      handleResumeClick,
+      handleResumeChoice,
+      showResumeModal,
       position,
       readmeContent
     }
