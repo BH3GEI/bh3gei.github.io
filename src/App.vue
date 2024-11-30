@@ -35,6 +35,13 @@
         @close="closeBlog"
         @minimize="minimizeBlog"
         @click.self="bringToFront('Blog')" />
+      <WebProxyWindow v-if="showWebProxy"
+        :class="{ 'minimized': isWebProxyMinimized }"
+        :style="{ zIndex: getZIndex('WebProxy') }"
+        :proxy-url="'https://stratoproxy.stratosphericus.workers.dev'"
+        @close="closeWebProxy"
+        @minimize="minimizeWebProxy"
+        @click.self="bringToFront('WebProxy')" />
       <Dock @open-app="openApp">
         <div class="dock-indicators">
           <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
@@ -48,6 +55,9 @@
           </div>
           <div class="dock-item" :class="{ 'running': showBlog, 'minimized': isBlogMinimized }" @click="showBlog ? (isBlogMinimized ? restoreBlog() : bringToFront('Blog')) : openApp('Blog')">
             <font-awesome-icon :icon="['fas', 'blog']" />
+          </div>
+          <div class="dock-item" :class="{ 'running': showWebProxy, 'minimized': isWebProxyMinimized }" @click="showWebProxy ? (isWebProxyMinimized ? restoreWebProxy() : bringToFront('WebProxy')) : openApp('WebProxy')">
+            <font-awesome-icon :icon="['fas', 'globe']" />
           </div>
         </div>
       </Dock>
@@ -67,6 +77,7 @@ import Profile from './components/Profile/Profile.vue'
 import Game2048 from './components/Game2048/Game2048.vue'
 import SpaceShooter from './components/SpaceShooter/SpaceShooter.vue'
 import BlogWindow from './components/Blog/Blog.vue'
+import WebProxyWindow from './components/WebProxy/WebProxyWindow.vue'
 import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
 
@@ -83,6 +94,7 @@ export default {
     Game2048,
     SpaceShooter,
     BlogWindow,
+    WebProxyWindow,
     FontAwesomeIcon
   },
   setup() {
@@ -90,14 +102,16 @@ export default {
     const show2048 = ref(false)
     const showSpaceShooter = ref(false)
     const showBlog = ref(false)
+    const showWebProxy = ref(false)
     const isWarpMode = ref(true)
     const mouseTrailer = ref(null)
     const isProfileMinimized = ref(false)
     const is2048Minimized = ref(false)
     const isSpaceShooterMinimized = ref(false)
     const isBlogMinimized = ref(false)
+    const isWebProxyMinimized = ref(false)
     const activeWindow = ref('Profile')
-    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog'])
+    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy'])
 
     const toggleTheme = () => {
       import('vue').then(({ nextTick }) => {
@@ -136,6 +150,11 @@ export default {
           isSpaceShooterMinimized.value = false
           bringToFront('SpaceShooter')
           break
+        case 'WebProxy':
+          showWebProxy.value = true
+          isWebProxyMinimized.value = false
+          bringToFront('WebProxy')
+          break
       }
     }
 
@@ -158,6 +177,11 @@ export default {
       showBlog.value = false
     }
 
+    const closeWebProxy = () => {
+      showWebProxy.value = false
+      isWebProxyMinimized.value = false
+    }
+
     const minimizeProfile = () => {
       isProfileMinimized.value = true
     }
@@ -172,6 +196,10 @@ export default {
 
     const minimizeBlog = () => {
       isBlogMinimized.value = true
+    }
+
+    const minimizeWebProxy = () => {
+      isWebProxyMinimized.value = true
     }
 
     const restoreProfile = () => {
@@ -189,6 +217,11 @@ export default {
     const restoreBlog = () => {
       isBlogMinimized.value = false
       bringToFront('Blog')
+    }
+
+    const restoreWebProxy = () => {
+      isWebProxyMinimized.value = false
+      bringToFront('WebProxy')
     }
 
     const bringToFront = (window) => {
@@ -215,12 +248,14 @@ export default {
       show2048,
       showSpaceShooter,
       showBlog,
+      showWebProxy,
       isWarpMode,
       mouseTrailer,
       isProfileMinimized,
       is2048Minimized,
       isSpaceShooterMinimized,
       isBlogMinimized,
+      isWebProxyMinimized,
       openApp,
       toggleTheme,
       closeProfile,
@@ -235,6 +270,9 @@ export default {
       closeBlog,
       minimizeBlog,
       restoreBlog,
+      closeWebProxy,
+      minimizeWebProxy,
+      restoreWebProxy,
       bringToFront,
       getZIndex
     }
@@ -413,7 +451,8 @@ html, body {
 .profile-container,
 .game-2048-container,
 .space-shooter-container,
-.blog-container {
+.blog-container,
+.web-proxy-container {
   position: relative;
   cursor: default;
 }
