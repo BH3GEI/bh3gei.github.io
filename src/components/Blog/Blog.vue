@@ -178,42 +178,31 @@ export default {
 .traffic-lights button::before {
   content: '';
   position: absolute;
-  top: 50%;
   left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.1s;
 }
 
+.traffic-lights .close::before { content: '×'; }
+.traffic-lights .minimize::before { content: '−'; }
+.traffic-lights .maximize::before { content: '+'; }
+
 .traffic-lights button:hover::before {
-  opacity: 0.3;
+  opacity: 1;
 }
 
 .close {
   background: #ff5f57;
 }
 
-.close::before {
-  content: '×';
-  font-size: 14px;
-}
-
 .minimize {
   background: #ffbd2e;
 }
 
-.minimize::before {
-  content: '−';
-  font-size: 14px;
-}
-
 .maximize {
   background: #28c940;
-}
-
-.maximize::before {
-  content: '+';
-  font-size: 14px;
 }
 
 .title {

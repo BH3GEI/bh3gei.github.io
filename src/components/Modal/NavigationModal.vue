@@ -101,6 +101,25 @@ export default {
   border-radius: 50%;
   border: none;
   cursor: pointer;
+  position: relative;
+}
+
+.control-btn::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.close::before {
+  content: '×';
+}
+
+.control-btn:hover::before {
+  opacity: 1;
 }
 
 .control-btn.close {
