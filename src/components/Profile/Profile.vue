@@ -28,7 +28,7 @@
           <div class="social-links">
             <div class="social-group">
 
-              <a href="academics/index.html" target="_blank" class="social-link">
+              <a href="https://academics.stratosphericus.workers.dev" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'user']" />
                 </span>

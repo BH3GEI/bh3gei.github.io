@@ -1,4 +1,18 @@
-<!DOCTYPE html>
+// 缓存时间（4秒，用于开发测试）
+const CACHE_TIME = 4
+
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  try {
+    // 从GitHub获取markdown内容
+    const response = await fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/academics.md')
+    const markdown = await response.text()
+
+    // HTML模板
+    const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -68,16 +82,24 @@
     </div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // Fetch content from GitHub raw content URL
-        fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/academics.md')
-            .then(response => response.text())
-            .then(text => {
-                document.getElementById('content').innerHTML = marked.parse(text);
-            })
-            .catch(error => {
-                console.error('Error fetching content:', error);
-                document.getElementById('content').innerHTML = '<p>Error loading content. Please try again later.</p>';
-            });
+        document.getElementById('content').innerHTML = marked.parse(\`${markdown}\`);
     </script>
 </body>
-</html>
+</html>`
+
+    return new Response(html, {
+      headers: {
+        'Content-Type': 'text/html;charset=UTF-8',
+        'Cache-Control': `public, max-age=${CACHE_TIME}`
+      }
+    })
+  } catch (error) {
+    return new Response('Error loading content', { 
+      status: 500,
+      headers: {
+        'Content-Type': 'text/plain;charset=UTF-8',
+        'Cache-Control': `public, max-age=${CACHE_TIME}`
+      }
+    })
+  }
+}
