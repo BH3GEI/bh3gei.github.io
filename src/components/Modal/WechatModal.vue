@@ -26,7 +26,7 @@ export default {
   name: 'WechatModal',
   emits: ['close'],
   setup() {
-    const qrCodeUrl = 'https://private-user-images.githubusercontent.com/58540850/391282507-b9d74f22-84ef-4713-8091-f1bc7aaefb28.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzI5OTgyMjAsIm5iZiI6MTczMjk5NzkyMCwicGF0aCI6Ii81ODU0MDg1MC8zOTEyODI1MDctYjlkNzRmMjItODRlZi00NzEzLTgwOTEtZjFiYzdhYWVmYjI4LnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNDExMzAlMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjQxMTMwVDIwMTg0MFomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWQyMjQyZWJkYTRkMTQyYjg3MmE2MTk5OWJkMTA2ZWE5MmQzZjliODgzNWNjOTUwODY4NDAyMTc5MjBlOWFhZTYmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.tgdNAJgyowZjKbF6Q4DH7XcL9hPoAcCOJiwXu1BA1mQ'
+    const qrCodeUrl = 'https://github.com/BH3GEI/Resume/blob/main/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20241201051627.png?raw=true'
     return {
       qrCodeUrl
     }
