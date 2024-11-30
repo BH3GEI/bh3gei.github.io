@@ -7,8 +7,19 @@ addEventListener('fetch', event => {
 
 async function handleRequest(request) {
   try {
+    const url = new URL(request.url)
+    const lang = url.searchParams.get('lang') || 'en'
+    
+    // 根据语言参数选择不同的markdown文件
+    let markdownUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/academics.md'
+    if (lang === 'cn') {
+      markdownUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/academics_cn.md'
+    } else if (lang === 'jp') {
+      markdownUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/academics_jp.md'
+    }
+
     // 从GitHub获取markdown内容
-    const response = await fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/academics.md')
+    const response = await fetch(markdownUrl)
     const markdown = await response.text()
 
     // HTML模板
@@ -90,6 +101,33 @@ async function handleRequest(request) {
             color: #57606a;
         }
 
+        .language-switcher {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .language-switcher button {
+            padding: 5px 10px;
+            border: 1px solid #d0d7de;
+            border-radius: 4px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .language-switcher button:hover {
+            background-color: #f6f8fa;
+        }
+
+        .language-switcher button.active {
+            background-color: #0969da;
+            color: white;
+            border-color: #0969da;
+        }
+
         .markdown-body img {
             max-width: 100%;
             height: auto;
@@ -101,6 +139,11 @@ async function handleRequest(request) {
 <body>
     <div class="markdown-body">
         <div class="header">
+            <div class="language-switcher">
+                <button onclick="switchLanguage('en')" ${lang === 'en' ? 'class="active"' : ''}>English</button>
+                <button onclick="switchLanguage('cn')" ${lang === 'cn' ? 'class="active"' : ''}>简体中文</button>
+                <button onclick="switchLanguage('jp')" ${lang === 'jp' ? 'class="active"' : ''}>日本語</button>
+            </div>
             <h1>Yao Li</h1>
             <div class="nav">
                 <div class="nav-item">
@@ -121,12 +164,20 @@ async function handleRequest(request) {
     </div>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
-        // 配置 marked 选项
-        marked.setOptions({
-            breaks: true,  // 支持 GitHub 风格的换行
-            gfm: true,    // 启用 GitHub 风格的 Markdown
-        });
-        document.getElementById('content').innerHTML = marked.parse(\`${markdown}\`);
+        // 等待 marked 加载完成
+        window.onload = function() {
+            marked.setOptions({
+                breaks: true,  // 支持 GitHub 风格的换行
+                gfm: true,    // 启用 GitHub 风格的 Markdown
+            });
+            document.getElementById('content').innerHTML = marked.parse(\`${markdown}\`);
+        }
+        
+        function switchLanguage(lang) {
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
     </script>
 </body>
 </html>`
@@ -138,7 +189,8 @@ async function handleRequest(request) {
       }
     })
   } catch (error) {
-    return new Response('Error loading content', { 
+    console.error('Error:', error)
+    return new Response('Error loading content: ' + error.message, { 
       status: 500,
       headers: {
         'Content-Type': 'text/plain;charset=UTF-8',
