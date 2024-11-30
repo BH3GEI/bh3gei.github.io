@@ -20,7 +20,8 @@
         </div>
         <div class="profile-content">
           <h2>LI YAO</h2>
-          <p class="welcome">Welcome to my space!</p>
+          <div class="readme-content" v-html="readmeContent"></div>
+          <!-- <p class="welcome">Welcome to my space!</p> -->
           <div class="social-links">
             <div class="social-group">
               <a @click.prevent="handleBlogClick" href="#" class="social-link">
@@ -98,7 +99,8 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { marked } from 'marked'
 import NavigationModal from '../Modal/NavigationModal.vue'
 
 export default {
@@ -198,6 +200,30 @@ export default {
       })
     }
 
+    const readmeContent = ref('Loading...')
+
+    onMounted(async () => {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/README.md')
+        const text = await response.text()
+        readmeContent.value = marked(text)
+      } catch (error) {
+        readmeContent.value = 'Failed to load content. Please try again later.'
+        console.error('Error loading README:', error)
+      }
+      
+      // Center the window
+      const profileWindow = document.querySelector('.profile-window')
+      if (profileWindow) {
+        const windowWidth = window.innerWidth
+        const windowHeight = window.innerHeight
+        position.value = {
+          x: (windowWidth - profileWindow.offsetWidth) / 2,
+          y: (windowHeight - profileWindow.offsetHeight) / 2
+        }
+      }
+    })
+
     return {
       details,
       profileWindow,
@@ -213,7 +239,8 @@ export default {
       showBlogModal,
       tooltipText,
       handleEmailClick,
-      position
+      position,
+      readmeContent
     }
   }
 }
@@ -227,7 +254,7 @@ export default {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  width: 480px;
+  width: 600px;
   min-height: 420px;
   user-select: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -484,6 +511,44 @@ summary::-webkit-details-marker {
   opacity: 0;
   visibility: hidden;
   transition: all 0.2s ease;
+}
+
+.readme-content {
+  padding: 15px;
+  line-height: 1.6;
+  color: #4a5568;
+}
+
+.readme-content :deep(h1),
+.readme-content :deep(h2),
+.readme-content :deep(h3) {
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.readme-content :deep(p) {
+  margin-bottom: 1em;
+}
+
+.readme-content :deep(ul),
+.readme-content :deep(ol) {
+  padding-left: 2em;
+  margin-bottom: 1em;
+}
+
+.readme-content :deep(code) {
+  background-color: #f5f5f5;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.readme-content :deep(pre) {
+  background-color: #f5f5f5;
+  padding: 1em;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin-bottom: 1em;
 }
 
 .social-link[data-tooltip]:hover::before,
