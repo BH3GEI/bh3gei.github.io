@@ -48,38 +48,47 @@
               </a>
             </div>
             <div class="social-group">
+
               <a href="https://github.com/BH3GEI/Resume/blob/main/Resume.pdf" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'file-pdf']" />
                 </span>
                 <span class="text">Resume</span>
               </a>
+
               <a href="https://github.com/BH3GEI/Resume/blob/main/WechatQR.png" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'weixin']" />
                 </span>
                 <span class="text">WeChat</span>
               </a>
-              <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'telegram']" />
-                </span>
-                <span class="text">Telegram</span>
-              </a>
-            </div>
-            <div class="social-group">
-              <a href="https://stratoproxy.stratosphericus.workers.dev" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'shield-halved']" />
-                </span>
-                <span class="text">Web Proxy</span>
-              </a>
+              
               <a href="https://chat-gpt-next-web-ozpr.vercel.app/" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'robot']" />
                 </span>
                 <span class="text">ChatGPT</span>
               </a>
+
+            </div>
+            <div class="social-group">
+
+              <a href="https://stratoproxy.stratosphericus.workers.dev" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'shield-halved']" />
+                </span>
+                <span class="text">Web Proxy</span>
+              </a>
+
+
+              <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fab', 'telegram']" />
+                </span>
+                <span class="text">Telegram</span>
+              </a>
+
+
               <a href="https://x.com/BH3GEI_CN" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'twitter']" />
