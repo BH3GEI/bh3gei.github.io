@@ -15,6 +15,10 @@ All profile information and social links are managed in `src/components/Profile/
 - Telegram: `https://t.me/yao_luv_cs`
 - Email: `scholar.liyao@gmail.com`
 
+### About
+Academic information is managed in `https://github.com/BH3GEI/Resume/blob/main/academics.md`
+
+
 ### Resume
 Resume files are available in three languages. The selection modal is managed in `src/components/Modal/ResumeChoiceModal.vue`
 

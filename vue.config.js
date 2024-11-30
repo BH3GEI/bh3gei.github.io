@@ -5,5 +5,12 @@ module.exports = defineConfig({
   outputDir: 'docs',
   productionSourceMap: false,
   // 确保不会覆盖重要文件
-  indexPath: 'index.html'
+  indexPath: 'index.html',
+  // 配置开发服务器
+  devServer: {
+    static: {
+      directory: './',
+      publicPath: '/'
+    }
+  }
 })

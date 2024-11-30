@@ -22,13 +22,13 @@
           <img class="avatar" src="https://avatars.githubusercontent.com/u/58540850?v=4" alt="avatar" />
         </div>
         <div class="profile-content">
-          <h2>LI YAO</h2>
+          <h2>YAO LI</h2>
           <div class="readme-content" v-html="readmeContent"></div>
           <!-- <p class="welcome">Welcome to my space!</p> -->
           <div class="social-links">
             <div class="social-group">
 
-              <a href="https://gist.github.com/BH3GEI/98c155ccc3435ff79d34e63085c745a0#file-academics-md" target="_blank" class="social-link">
+              <a href="academics/index.html" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'user']" />
                 </span>
