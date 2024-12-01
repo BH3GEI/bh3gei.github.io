@@ -12,10 +12,13 @@ async function handleRequest(request) {
     
     // 根据语言参数选择不同的markdown文件
     let markdownUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/academics.md'
+    let titleName = 'Yao Li'
     if (lang === 'cn') {
       markdownUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/academics_cn.md'
+      titleName = '李 尧'
     } else if (lang === 'jp') {
       markdownUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/academics_jp.md'
+      titleName = 'リ・ヤオ'
     }
 
     // 从GitHub获取markdown内容
@@ -28,7 +31,7 @@ async function handleRequest(request) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yao Li - Academic Profile</title>
+    <title>${titleName} - Academic Profile</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.min.css">
     <style>
         .markdown-body {
@@ -144,7 +147,7 @@ async function handleRequest(request) {
                 <button onclick="switchLanguage('cn')" ${lang === 'cn' ? 'class="active"' : ''}>简体中文</button>
                 <button onclick="switchLanguage('jp')" ${lang === 'jp' ? 'class="active"' : ''}>日本語</button>
             </div>
-            <h1>Yao Li</h1>
+            <h1>${titleName}</h1>
             <div class="nav">
                 <div class="nav-item">
                     <a href="https://bh3gei.github.io/">Home</a>
