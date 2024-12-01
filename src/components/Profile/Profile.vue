@@ -78,7 +78,7 @@
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'briefcase']" />
                 </span>
-                <span class="text">Linkedin</span>
+                <span class="text">LinkedIn</span>
               </a>
 
             </div>
