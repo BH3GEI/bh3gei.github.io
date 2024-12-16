@@ -7,6 +7,10 @@ set -e
 echo "正在构建项目..."
 npm run build
 
+# 添加 ads.txt 文件
+echo "添加 ads.txt 文件..."
+echo "google.com, pub-9131146702581512, DIRECT, f08c47fec0942fa0" > docs/ads.txt
+
 # 添加所有更改
 echo "添加更改到Git..."
 git add .
