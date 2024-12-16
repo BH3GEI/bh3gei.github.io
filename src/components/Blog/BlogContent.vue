@@ -1,5 +1,13 @@
 <template>
   <div class="blog-content">
+    <div class="ad-container">
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-9131146702581512"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>
     <div v-if="loading" class="loading">
       <p>Loading...</p>
     </div>
