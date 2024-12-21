@@ -159,7 +159,6 @@ export default {
   mounted() {
     this.updateScale()
     window.addEventListener('resize', this.updateScale)
-    this.fetchPosts()
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (error) {

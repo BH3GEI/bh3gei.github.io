@@ -56,8 +56,8 @@
           <div class="dock-item" :class="{ 'running': showBlog, 'minimized': isBlogMinimized }" @click="showBlog ? (isBlogMinimized ? restoreBlog() : bringToFront('Blog')) : openApp('Blog')">
             <font-awesome-icon :icon="['fas', 'blog']" />
           </div>
-          <div class="dock-item" :class="{ 'running': showWebProxy, 'minimized': isWebProxyMinimized }" @click="showWebProxy ? (isWebProxyMinimized ? restoreWebProxy() : bringToFront('WebProxy')) : openApp('WebProxy')">
-            <font-awesome-icon :icon="['fas', 'globe']" />
+          <div class="dock-item" @click="window.open('https://bh3gei.github.io/ProjectPage/', '_blank')">
+            <font-awesome-icon :icon="['fas', 'folder-open']" />
           </div>
         </div>
       </Dock>

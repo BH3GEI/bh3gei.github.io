@@ -26,13 +26,18 @@ export default {
         { name: 'Blog', icon: 'mdi mdi-post', component: 'Blog' },
         { name: '2048', icon: 'mdi mdi-numeric-2-box-multiple-outline', component: '2048' },
         { name: 'Space Shooter', icon: 'mdi mdi-rocket', component: 'SpaceShooter' },
-        { name: 'Web Proxy', icon: 'mdi mdi-web', component: 'WebProxy' }
+        { name: 'Web Proxy', icon: 'mdi mdi-web', component: 'WebProxy' },
+        { name: 'Projects', icon: 'mdi mdi-folder-open', url: 'https://bh3gei.github.io/ProjectPage/' }
       ]
     }
   },
   methods: {
     openApp(app) {
-      this.$emit('open-app', app.component)
+      if (app.url) {
+        window.open(app.url, '_blank')
+      } else {
+        this.$emit('open-app', app.component)
+      }
     },
     onMouseOver(event) {
       const item = event.currentTarget
