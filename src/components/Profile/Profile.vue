@@ -32,7 +32,7 @@
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'user']" />
                 </span>
-                <span class="text">About</span>
+                <span class="text">CV</span>
               </a>
 
 
