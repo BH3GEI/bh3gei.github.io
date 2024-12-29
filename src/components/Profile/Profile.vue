@@ -103,14 +103,14 @@
                 <span class="text">Resume</span>
               </a>
 
-              <a href="https://bh3gei.github.io/ProjectPage" target="_blank" class="social-link">
+              <a @click.prevent="handlePortfolioClick" href="#" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'folder-open']" />
                 </span>
                 <span class="text">Portfolio</span>
               </a>
 
-              <a href="https://bh3gei.github.io/AllLinks" target="_blank" class="social-link">
+              <a @click.prevent="handleAllLinksClick" href="#" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'link']" />
                 </span>
@@ -128,6 +128,14 @@
     <NavigationModal
       v-model="showBlogModal"
       @choice="handleBlogChoice"
+    />
+    <NavigationModal
+      v-model="showPortfolioModal"
+      @choice="handlePortfolioChoice"
+    />
+    <NavigationModal
+      v-model="showAllLinksModal"
+      @choice="handleAllLinksChoice"
     />
     <ResumeChoiceModal v-if="showResumeModal" @close="showResumeModal = false" @choice="handleResumeChoice" />
     <WechatModal v-if="showWechatModal" @close="showWechatModal = false" />
@@ -169,6 +177,8 @@ export default {
     const showBlogModal = ref(false)
     const showResumeModal = ref(false)
     const showWechatModal = ref(false)
+    const showPortfolioModal = ref(false)
+    const showAllLinksModal = ref(false)
     const isMobile = ref(false);
     const mobileStyle = computed(() => {
       if (isMobile.value) {
@@ -298,6 +308,30 @@ export default {
       showWechatModal.value = true
     }
 
+    const handlePortfolioClick = () => {
+      showPortfolioModal.value = true
+    }
+
+    const handlePortfolioChoice = (choice) => {
+      if (choice === 'new') {
+        window.open('https://bh3gei.github.io/ProjectPage', '_blank')
+      } else {
+        emit('open-project-proxy')
+      }
+    }
+
+    const handleAllLinksClick = () => {
+      showAllLinksModal.value = true
+    }
+
+    const handleAllLinksChoice = (choice) => {
+      if (choice === 'new') {
+        window.open('https://bh3gei.github.io/AllLinks', '_blank')
+      } else {
+        emit('open-web-proxy')
+      }
+    }
+
     const readmeContent = ref('Loading...')
 
     const checkMobile = () => {
@@ -357,7 +391,13 @@ export default {
       position,
       readmeContent,
       isMobile,
-      mobileStyle
+      mobileStyle,
+      showPortfolioModal,
+      handlePortfolioChoice,
+      showAllLinksModal,
+      handleAllLinksChoice,
+      handlePortfolioClick,
+      handleAllLinksClick
     }
   }
 }

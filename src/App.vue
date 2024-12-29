@@ -16,7 +16,9 @@
         @close="closeProfile" 
         @minimize="minimizeProfile"
         @click.self="bringToFront('Profile')"
-        @open-blog="openApp('Blog')" />
+        @open-blog="openApp('Blog')"
+        @open-project-proxy="openApp('ProjectProxy')"
+        @open-web-proxy="openApp('WebProxy')" />
       <Game2048 v-if="show2048" 
         :class="{ 'minimized': is2048Minimized }" 
         :style="{ zIndex: getZIndex('2048') }"
