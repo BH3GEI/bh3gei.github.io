@@ -9,7 +9,7 @@
         <div class="spacer"></div>
       </div>
       <div class="modal-content">
-        <p>How would you like to view the Page?</p>
+        <p>How would you like to view the page?</p>
         <div class="button-group">
           <button class="modal-btn" @click="handleChoice('new')">
             <font-awesome-icon icon="external-link-alt" />
