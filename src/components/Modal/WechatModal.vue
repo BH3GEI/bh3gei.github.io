@@ -26,7 +26,7 @@ export default {
   name: 'WechatModal',
   emits: ['close'],
   setup() {
-    const qrCodeUrl = 'https://github.com/BH3GEI/Resume/blob/main/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20241201051627.png?raw=true'
+    const qrCodeUrl = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/WechatQR.png'
     return {
       qrCodeUrl
     }
