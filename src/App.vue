@@ -37,10 +37,9 @@
         @close="closeBlog"
         @minimize="minimizeBlog"
         @click.self="bringToFront('Blog')" />
-      <WebProxyWindow v-if="showWebProxy"
+      <LinksWindow v-if="showWebProxy"
         :class="{ 'minimized': isWebProxyMinimized }"
         :style="{ zIndex: getZIndex('WebProxy') }"
-        :proxy-url="'https://bh3gei.github.io/AllLinks/'"
         :initial-position="webProxyPosition"
         @close="closeWebProxy"
         @minimize="minimizeWebProxy"
@@ -53,6 +52,14 @@
         @close="closeProjectProxy"
         @minimize="minimizeProjectProxy"
         @click.self="bringToFront('ProjectProxy')" />
+      <StratoProxyWindow v-if="showStratoProxy"
+        :class="{ 'minimized': isStratoProxyMinimized }"
+        :style="{ zIndex: getZIndex('StratoProxy') }"
+        :proxy-url="'https://bh3gei.github.io/ProjectPage/'"
+        :initial-position="stratoProxyPosition"
+        @close="closeStratoProxy"
+        @minimize="minimizeStratoProxy"
+        @click.self="bringToFront('StratoProxy')" />
       <Dock v-if="!isMobile" @open-app="openApp">
         <div class="dock-indicators">
           <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
@@ -71,6 +78,9 @@
             <font-awesome-icon :icon="['fas', 'folder-open']" />
           </div> -->
           <div class="dock-item" :class="{ 'running': showProjectProxy, 'minimized': isProjectProxyMinimized }" @click="showProjectProxy ? (isProjectProxyMinimized ? restoreProjectProxy() : bringToFront('ProjectProxy')) : openApp('ProjectProxy')">
+            <font-awesome-icon :icon="['fas', 'folder-open']" />
+          </div>
+          <div class="dock-item" :class="{ 'running': showStratoProxy, 'minimized': isStratoProxyMinimized }" @click="showStratoProxy ? (isStratoProxyMinimized ? restoreStratoProxy() : bringToFront('StratoProxy')) : openApp('StratoProxy')">
             <font-awesome-icon :icon="['fas', 'folder-open']" />
           </div>
         </div>
@@ -92,6 +102,8 @@ import Game2048 from './components/Game2048/Game2048.vue'
 import SpaceShooter from './components/SpaceShooter/SpaceShooter.vue'
 import BlogWindow from './components/Blog/Blog.vue'
 import WebProxyWindow from './components/WebProxy/WebProxyWindow.vue'
+import LinksWindow from './components/WebProxy/LinksWindow.vue'
+import StratoProxyWindow from './components/WebProxy/StratoProxyWindow.vue'
 import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
 
@@ -109,6 +121,8 @@ export default {
     SpaceShooter,
     BlogWindow,
     WebProxyWindow,
+    LinksWindow,
+    StratoProxyWindow,
     FontAwesomeIcon
   },
   setup() {
@@ -127,8 +141,10 @@ export default {
     const activeWindow = ref('Profile')
     const showProjectProxy = ref(false)
     const isProjectProxyMinimized = ref(false)
+    const showStratoProxy = ref(false)
+    const isStratoProxyMinimized = ref(false)
 
-    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy', 'ProjectProxy'])
+    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy', 'ProjectProxy', 'StratoProxy'])
     const isMobile = ref(false);
     const proxyUrl = ref('')
 
@@ -139,6 +155,11 @@ export default {
 
     const projectProxyPosition = ref({
       x: window.innerWidth / 2 - 200,  // 向右偏移
+      y: window.innerHeight / 2 - 300
+    })
+
+    const stratoProxyPosition = ref({
+      x: window.innerWidth / 2,  // 居中
       y: window.innerHeight / 2 - 300
     })
 
@@ -203,6 +224,11 @@ export default {
           showProjectProxy.value = true
           isProjectProxyMinimized.value = false
           bringToFront('ProjectProxy')
+          break
+        case 'StratoProxy':
+          showStratoProxy.value = true
+          isStratoProxyMinimized.value = false
+          bringToFront('StratoProxy')
           break
       }
     }
@@ -302,6 +328,20 @@ export default {
       bringToFront('ProjectProxy')
     }
 
+    const closeStratoProxy = () => {
+      showStratoProxy.value = false
+      isStratoProxyMinimized.value = false
+    }
+
+    const minimizeStratoProxy = () => {
+      isStratoProxyMinimized.value = true
+    }
+
+    const restoreStratoProxy = () => {
+      isStratoProxyMinimized.value = false
+      bringToFront('StratoProxy')
+    }
+
     return {
       showProfile,
       show2048,
@@ -341,7 +381,13 @@ export default {
       minimizeProjectProxy,
       restoreProjectProxy,
       webProxyPosition,
-      projectProxyPosition
+      projectProxyPosition,
+      showStratoProxy,
+      isStratoProxyMinimized,
+      stratoProxyPosition,
+      closeStratoProxy,
+      minimizeStratoProxy,
+      restoreStratoProxy
     }
   }
 }

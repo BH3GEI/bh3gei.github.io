@@ -5,11 +5,11 @@
         <div class="window-controls">
           <button class="control-btn close" @click="$emit('update:modelValue', false)"></button>
         </div>
-        <span>Open Blog</span>
+        <span>Open Page</span>
         <div class="spacer"></div>
       </div>
       <div class="modal-content">
-        <p>How would you like to view the blog?</p>
+        <p>How would you like to view the Page?</p>
         <div class="button-group">
           <button class="modal-btn" @click="handleChoice('new')">
             <font-awesome-icon icon="external-link-alt" />
