@@ -20,8 +20,8 @@
           <button class="control-btn close" @click="$emit('close')"></button>
           <button class="control-btn minimize" @click="$emit('minimize')"></button>
         </div>
-        <span style="flex: 1; text-align: center;">Web Proxy</span>
-        <div class="controls"></div>
+        <div class="title" ref="titleElement">Embedded Browser</div>
+        <div class="spacer"></div>
       </div>
       <div class="proxy-content" :class="{ maximized }">
         <iframe
@@ -47,14 +47,18 @@ export default {
     proxyUrl: {
       type: String,
       required: true
+    },
+    initialPosition: {
+      type: Object,
+      default: () => ({
+        x: window.innerWidth / 2 - 300,
+        y: window.innerHeight / 2 - 300
+      })
     }
   },
   data() {
     return {
-      position: {
-        x: window.innerWidth / 2 - 400,
-        y: window.innerHeight / 2 - 300
-      },
+      position: this.initialPosition,
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
       scale: 1,
@@ -72,6 +76,12 @@ export default {
         x: event.clientX - rect.left,
         y: event.clientY - rect.top
       }
+      
+      this.$refs.proxyWindow.style.transition = 'none'
+      this.$refs.proxyWindow.style.willChange = 'transform'
+      document.body.style.userSelect = 'none'
+      document.body.style.cursor = 'move'
+      
       document.addEventListener('mousemove', this.onDrag)
       document.addEventListener('mouseup', this.stopDrag)
     },
@@ -94,6 +104,11 @@ export default {
       this.isDragging = false
       document.removeEventListener('mousemove', this.onDrag)
       document.removeEventListener('mouseup', this.stopDrag)
+      
+      this.$refs.proxyWindow.style.transition = ''
+      this.$refs.proxyWindow.style.willChange = 'auto'
+      document.body.style.userSelect = ''
+      document.body.style.cursor = ''
     },
     handleMouseMove(event) {
       if (this.isDragging) {
@@ -154,11 +169,25 @@ export default {
       } catch (error) {
         console.warn('Failed to setup iframe handlers:', error);
       }
+    },
+    updateTitlePosition() {
+      this.$nextTick(() => {
+        const titleElement = this.$refs.titleElement;
+        const windowElement = this.$refs.proxyWindow;
+        if (titleElement && windowElement) {
+          const controlsWidth = 70; // 控制按钮区域宽度
+          titleElement.style.marginRight = `${controlsWidth}px`;
+        }
+      });
     }
   },
   mounted() {
     this.updateScale()
-    window.addEventListener('resize', this.updateScale)
+    this.updateTitlePosition()
+    window.addEventListener('resize', () => {
+      this.updateScale()
+      this.updateTitlePosition()
+    })
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
     } catch (error) {
@@ -167,6 +196,13 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updateScale)
+  },
+  watch: {
+    maximized() {
+      this.$nextTick(() => {
+        this.updateTitlePosition()
+      })
+    }
   }
 }
 </script>
@@ -288,5 +324,19 @@ export default {
 
 .maximized .proxy-content {
   height: calc(100vh - 48px);
+}
+
+.title {
+  flex: 1;
+  text-align: center;
+  color: #e2e8f0;
+  font-size: 14px;
+  margin-right: 70px;
+  transform: translateX(35px);
+}
+
+.spacer {
+  width: 70px;
+  flex-shrink: 0;
 }
 </style>

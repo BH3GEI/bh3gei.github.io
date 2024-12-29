@@ -38,10 +38,19 @@
       <WebProxyWindow v-if="showWebProxy"
         :class="{ 'minimized': isWebProxyMinimized }"
         :style="{ zIndex: getZIndex('WebProxy') }"
-        :proxy-url="'https://stratoproxy.stratosphericus.workers.dev'"
+        :proxy-url="'https://bh3gei.github.io/AllLinks/'"
+        :initial-position="webProxyPosition"
         @close="closeWebProxy"
         @minimize="minimizeWebProxy"
         @click.self="bringToFront('WebProxy')" />
+      <WebProxyWindow v-if="showProjectProxy"
+        :class="{ 'minimized': isProjectProxyMinimized }"
+        :style="{ zIndex: getZIndex('ProjectProxy') }"
+        :proxy-url="'https://bh3gei.github.io/ProjectPage/'"
+        :initial-position="projectProxyPosition"
+        @close="closeProjectProxy"
+        @minimize="minimizeProjectProxy"
+        @click.self="bringToFront('ProjectProxy')" />
       <Dock v-if="!isMobile" @open-app="openApp">
         <div class="dock-indicators">
           <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
@@ -56,7 +65,10 @@
           <div class="dock-item" :class="{ 'running': showBlog, 'minimized': isBlogMinimized }" @click="showBlog ? (isBlogMinimized ? restoreBlog() : bringToFront('Blog')) : openApp('Blog')">
             <font-awesome-icon :icon="['fas', 'blog']" />
           </div>
-          <div class="dock-item" @click="window.open('https://bh3gei.github.io/ProjectPage/', '_blank')">
+          <!-- <div class="dock-item" @click="window.open('https://bh3gei.github.io/ProjectPage/', '_blank')">
+            <font-awesome-icon :icon="['fas', 'folder-open']" />
+          </div> -->
+          <div class="dock-item" :class="{ 'running': showProjectProxy, 'minimized': isProjectProxyMinimized }" @click="showProjectProxy ? (isProjectProxyMinimized ? restoreProjectProxy() : bringToFront('ProjectProxy')) : openApp('ProjectProxy')">
             <font-awesome-icon :icon="['fas', 'folder-open']" />
           </div>
         </div>
@@ -68,7 +80,7 @@
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog, faFolderOpen, faLink } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import StarryBackground from './components/StarryBackground/StarryBackground.vue'
@@ -81,7 +93,7 @@ import WebProxyWindow from './components/WebProxy/WebProxyWindow.vue'
 import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
 
-library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faGithub, faBlog)
+library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faGithub, faBlog, faFolderOpen, faLink)
 
 export default {
   name: 'App',
@@ -111,8 +123,22 @@ export default {
     const isBlogMinimized = ref(false)
     const isWebProxyMinimized = ref(false)
     const activeWindow = ref('Profile')
-    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy'])
+    const showProjectProxy = ref(false)
+    const isProjectProxyMinimized = ref(false)
+
+    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy', 'ProjectProxy'])
     const isMobile = ref(false);
+    const proxyUrl = ref('')
+
+    const webProxyPosition = ref({
+      x: window.innerWidth / 2 - 400,  // 向左偏移
+      y: window.innerHeight / 2 - 300
+    })
+
+    const projectProxyPosition = ref({
+      x: window.innerWidth / 2 - 200,  // 向右偏移
+      y: window.innerHeight / 2 - 300
+    })
 
     const checkMobile = () => {
       isMobile.value = window.innerWidth <= 768;
@@ -166,9 +192,15 @@ export default {
           bringToFront('SpaceShooter')
           break
         case 'WebProxy':
+          proxyUrl.value = 'https://bh3gei.github.io/AllLinks/'
           showWebProxy.value = true
           isWebProxyMinimized.value = false
           bringToFront('WebProxy')
+          break
+        case 'ProjectProxy':
+          showProjectProxy.value = true
+          isProjectProxyMinimized.value = false
+          bringToFront('ProjectProxy')
           break
       }
     }
@@ -254,6 +286,20 @@ export default {
       return windowOrder.value.indexOf(window) + 10
     }
 
+    const closeProjectProxy = () => {
+      showProjectProxy.value = false
+      isProjectProxyMinimized.value = false
+    }
+
+    const minimizeProjectProxy = () => {
+      isProjectProxyMinimized.value = true
+    }
+
+    const restoreProjectProxy = () => {
+      isProjectProxyMinimized.value = false
+      bringToFront('ProjectProxy')
+    }
+
     return {
       showProfile,
       show2048,
@@ -286,7 +332,14 @@ export default {
       restoreWebProxy,
       bringToFront,
       getZIndex,
-      isMobile
+      isMobile,
+      showProjectProxy,
+      isProjectProxyMinimized,
+      closeProjectProxy,
+      minimizeProjectProxy,
+      restoreProjectProxy,
+      webProxyPosition,
+      projectProxyPosition
     }
   }
 }

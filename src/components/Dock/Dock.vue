@@ -23,11 +23,11 @@ export default {
     return {
       apps: [
         { name: 'Profile', icon: 'mdi mdi-account', component: 'Profile' },
-        { name: 'Blog', icon: 'mdi mdi-post', component: 'Blog' },
         { name: '2048', icon: 'mdi mdi-numeric-2-box-multiple-outline', component: '2048' },
         { name: 'Space Shooter', icon: 'mdi mdi-rocket', component: 'SpaceShooter' },
-        { name: 'Web Proxy', icon: 'mdi mdi-web', component: 'WebProxy' },
-        { name: 'Links & Projects', icon: 'mdi mdi-folder-open', url: 'https://bh3gei.github.io/ProjectPage/' }
+        { name: 'Blog', icon: 'mdi mdi-notebook', component: 'Blog' },
+        { name: 'All Links', icon: 'mdi mdi-web', component: 'WebProxy' },
+        { name: 'Links & Projects', icon: 'mdi mdi-folder', component: 'ProjectProxy' }
       ]
     }
   },

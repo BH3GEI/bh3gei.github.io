@@ -208,9 +208,13 @@ export default {
 .title {
   flex: 1;
   text-align: center;
-  color: var(--text-color);
+  color: #e2e8f0;
   font-size: 14px;
   margin-right: 70px;
+}
+
+.spacer {
+  width: 70px;
 }
 
 .window-content {

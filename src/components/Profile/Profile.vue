@@ -35,6 +35,8 @@
                 <span class="text">About</span>
               </a>
 
+
+
               <a href="https://github.com/bh3gei" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fab', 'github']" />
@@ -52,6 +54,9 @@
             </div>
             <div class="social-group">
 
+
+
+
               <a href="mailto:scholar.liyao@gmail.com" 
                 class="social-link" 
                 @click.prevent="handleEmailClick" 
@@ -63,28 +68,12 @@
                 <span class="text">Email</span>
               </a>
 
-              <a @click.prevent="handleResumeClick" href="#" class="social-link" ref="resumeLink" :data-tooltip="resumeTooltip">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
-                </span>
-                <span class="text">Resume</span>
-              </a>
-
-
-
-
-
               <a href="https://linkedin.com/in/yao-li2026" target="_blank" class="social-link">
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'briefcase']" />
                 </span>
                 <span class="text">LinkedIn</span>
               </a>
-
-            </div>
-            <div class="social-group">
-
-
 
               <a @click.prevent="handleWechatClick" href="#" class="social-link">
                 <span class="icon">
@@ -93,20 +82,44 @@
                 <span class="text">WeChat</span>
               </a>
 
-              <a href="https://t.me/yao_luv_cs" target="_blank" class="social-link">
+
+
+
+
+            </div>
+            <div class="social-group">
+
+
+
+
+
+
+
+
+              <a @click.prevent="handleResumeClick" href="#" class="social-link" ref="resumeLink" :data-tooltip="resumeTooltip">
                 <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'telegram']" />
+                  <font-awesome-icon :icon="['fas', 'file-pdf']" />
                 </span>
-                <span class="text">Telegram</span>
+                <span class="text">Resume</span>
+              </a>
+
+              <a href="https://bh3gei.github.io/ProjectPage" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'folder-open']" />
+                </span>
+                <span class="text">Portfolio</span>
+              </a>
+
+              <a href="https://bh3gei.github.io/AllLinks" target="_blank" class="social-link">
+                <span class="icon">
+                  <font-awesome-icon :icon="['fas', 'link']" />
+                </span>
+                <span class="text">All Links</span>
               </a>
 
 
-              <a href="https://x.com/BH3GEI_CN" target="_blank" class="social-link">
-                <span class="icon">
-                  <font-awesome-icon :icon="['fab', 'twitter']" />
-                </span>
-                <span class="text">Twitter</span>
-              </a>
+
+
             </div>
           </div>
         </div>
@@ -237,15 +250,25 @@ export default {
 
     const handleEmailClick = () => {
       const email = 'scholar.liyao@gmail.com'
-      navigator.clipboard.writeText(email).then(() => {
-        tooltipText.value = 'Copied!'
-        setTimeout(() => {
-          tooltipText.value = 'Click to copy'
-        }, 2000)
-        
-        // Open mailto link
+      
+      // 检查 clipboard API 是否可用
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(email)
+          .then(() => {
+            tooltipText.value = 'Copied!'
+            setTimeout(() => {
+              tooltipText.value = 'Click to copy'
+            }, 2000)
+          })
+          .catch(err => {
+            console.warn('Failed to copy:', err)
+            // 降级方案：直接打开邮件客户端
+            window.location.href = `mailto:${email}`
+          })
+      } else {
+        // 如果 clipboard API 不可用，直接打开邮件客户端
         window.location.href = `mailto:${email}`
-      })
+      }
     }
 
     const handleResumeClick = () => {
