@@ -289,13 +289,13 @@ export default {
       let url = ''
       switch(choice) {
         case 'en':
-          url = 'https://github.com/BH3GEI/Resume/blob/main/Resume.pdf'
+          url = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/Resume.pdf'
           break
         case 'jp':
-          url = 'https://github.com/BH3GEI/Resume/blob/main/Resume_JP.pdf'
+          url = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/Resume_JP.pdf'
           break
         case 'cn':
-          url = 'https://github.com/BH3GEI/Resume/blob/main/Resume_CN.pdf'
+          url = 'https://raw.githubusercontent.com/BH3GEI/Resume/main/Resume_CN.pdf'
           break
       }
       if (url) {
