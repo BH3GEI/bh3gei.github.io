@@ -1,6 +1,6 @@
 <template>
   <div v-if="modelValue" class="modal-overlay" @click="$emit('update:modelValue', false)">
-    <div class="modal-window" @click.stop>
+    <div v-if="!isMobile" class="modal-window" @click.stop>
       <div class="title-bar">
         <div class="window-controls">
           <button class="control-btn close" @click="$emit('update:modelValue', false)"></button>
@@ -27,6 +27,9 @@
 </template>
 
 <script>
+import { ref, onMounted, watch } from 'vue'
+import { isMobileDevice } from '@/utils/deviceDetection'
+
 export default {
   name: 'NavigationModal',
   props: {
@@ -37,13 +40,26 @@ export default {
   },
   emits: ['update:modelValue', 'choice'],
   setup(props, { emit }) {
+    const isMobile = ref(false)
+
+    onMounted(() => {
+      isMobile.value = isMobileDevice()
+    })
+
+    watch(() => props.modelValue, (newVal) => {
+      if (newVal && isMobile.value) {
+        handleChoice('new')
+      }
+    })
+
     const handleChoice = (choice) => {
       emit('choice', choice)
       emit('update:modelValue', false)
     }
 
     return {
-      handleChoice
+      handleChoice,
+      isMobile
     }
   }
 }

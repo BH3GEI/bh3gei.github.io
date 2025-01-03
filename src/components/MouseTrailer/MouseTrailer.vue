@@ -19,6 +19,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, defineExpose } from 'vue'
+import { isMobileDevice } from '@/utils/deviceDetection'
 
 const isVisible = ref(false)
 const mouseX = ref(0)
@@ -26,7 +27,8 @@ const mouseY = ref(0)
 const trailX = ref(0)
 const trailY = ref(0)
 const gravityForce = ref({ x: 0, y: 0, inRange: false })
-const isOverIframe = ref(false);
+const isOverIframe = ref(false)
+const isMobile = ref(false)
 
 let animationFrameId = null
 const speed = 0.35
@@ -76,18 +78,23 @@ defineExpose({
 })
 
 onMounted(() => {
-  window.addEventListener('mousemove', handleMouseMove)
-  window.addEventListener('mousemove', checkIfOverIframe);
-  window.addEventListener('mouseleave', handleMouseLeave)
-  updatePosition()
+  isMobile.value = isMobileDevice()
+  if (!isMobile.value) {
+    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', checkIfOverIframe)
+    window.addEventListener('mouseleave', handleMouseLeave)
+    updatePosition()
+  }
 })
 
 onUnmounted(() => {
-  window.removeEventListener('mousemove', handleMouseMove)
-  window.removeEventListener('mousemove', checkIfOverIframe);
-  window.removeEventListener('mouseleave', handleMouseLeave)
-  if (animationFrameId) {
-    cancelAnimationFrame(animationFrameId)
+  if (!isMobile.value) {
+    window.removeEventListener('mousemove', handleMouseMove)
+    window.removeEventListener('mousemove', checkIfOverIframe)
+    window.removeEventListener('mouseleave', handleMouseLeave)
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId)
+    }
   }
 })
 </script>
