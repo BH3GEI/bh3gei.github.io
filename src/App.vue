@@ -45,10 +45,9 @@
         @close="closeWebProxy"
         @minimize="minimizeWebProxy"
         @click.self="bringToFront('WebProxy')" />
-      <WebProxyWindow v-if="showProjectProxy"
+      <ProjectsWindow v-if="showProjectProxy"
         :class="{ 'minimized': isProjectProxyMinimized }"
         :style="{ zIndex: getZIndex('ProjectProxy') }"
-        :proxy-url="'https://bh3gei.github.io/ProjectPage/'"
         :initial-position="projectProxyPosition"
         @close="closeProjectProxy"
         @minimize="minimizeProjectProxy"
@@ -56,11 +55,18 @@
       <StratoProxyWindow v-if="showStratoProxy"
         :class="{ 'minimized': isStratoProxyMinimized }"
         :style="{ zIndex: getZIndex('StratoProxy') }"
-        :proxy-url="'https://bh3gei.github.io/ProjectPage/'"
         :initial-position="stratoProxyPosition"
         @close="closeStratoProxy"
         @minimize="minimizeStratoProxy"
         @click.self="bringToFront('StratoProxy')" />
+      <BrowserWindow v-if="showBrowser"
+        :class="{ 'minimized': isBrowserMinimized }"
+        :style="{ zIndex: getZIndex('Browser') }"
+        :initial-position="browserPosition"
+        :initial-url="browserUrl"
+        @close="closeBrowser"
+        @minimize="minimizeBrowser"
+        @click.self="bringToFront('Browser')" />
       <Dock v-if="!isMobile" @open-app="openApp">
         <div class="dock-indicators">
           <div class="dock-item" :class="{ 'running': showProfile, 'minimized': isProfileMinimized }" @click="showProfile ? (isProfileMinimized ? restoreProfile() : bringToFront('Profile')) : openApp('Profile')">
@@ -84,6 +90,9 @@
           <div class="dock-item" :class="{ 'running': showStratoProxy, 'minimized': isStratoProxyMinimized }" @click="showStratoProxy ? (isStratoProxyMinimized ? restoreStratoProxy() : bringToFront('StratoProxy')) : openApp('StratoProxy')">
             <font-awesome-icon :icon="['fas', 'folder-open']" />
           </div>
+          <div class="dock-item" :class="{ 'running': showBrowser, 'minimized': isBrowserMinimized }" @click="showBrowser ? (isBrowserMinimized ? restoreBrowser() : bringToFront('Browser')) : openApp('Browser')">
+            <font-awesome-icon :icon="['fas', 'browser']" />
+          </div>
         </div>
       </Dock>
     </div>
@@ -102,12 +111,13 @@ import Profile from './components/Profile/Profile.vue'
 import Game2048 from './components/Game2048/Game2048.vue'
 import SpaceShooter from './components/SpaceShooter/SpaceShooter.vue'
 import BlogWindow from './components/Blog/Blog.vue'
-import WebProxyWindow from './components/WebProxy/WebProxyWindow.vue'
 import LinksWindow from './components/WebProxy/LinksWindow.vue'
+import ProjectsWindow from './components/WebProxy/ProjectsWindow.vue'
 import StratoProxyWindow from './components/WebProxy/StratoProxyWindow.vue'
 import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
 import SimpleBackground from './components/SimpleBackground/SimpleBackground.vue'
+import BrowserWindow from './components/WebProxy/BrowserWindow.vue'
 
 library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faBlog, faFolderOpen, faLink, faStar, faGithub)
 
@@ -122,9 +132,10 @@ export default {
     Game2048,
     SpaceShooter,
     BlogWindow,
-    WebProxyWindow,
     LinksWindow,
+    ProjectsWindow,
     StratoProxyWindow,
+    BrowserWindow,
     FontAwesomeIcon,
     SimpleBackground
   },
@@ -146,14 +157,20 @@ export default {
     const isProjectProxyMinimized = ref(false)
     const showStratoProxy = ref(false)
     const isStratoProxyMinimized = ref(false)
+    const showBrowser = ref(false)
+    const isBrowserMinimized = ref(false)
+    const browserUrl = ref('https://example.com/')
+    const browserPosition = ref({
+      x: window.innerWidth / 2 - 400,
+      y: window.innerHeight / 2 - 300
+    })
 
-    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy', 'ProjectProxy', 'StratoProxy'])
-    const isMobile = ref(false);
-    const proxyUrl = ref('')
+    const windowOrder = ref(['Profile', '2048', 'SpaceShooter', 'Blog', 'WebProxy', 'ProjectProxy', 'StratoProxy', 'Browser'])
+    const isMobile = ref(false)
 
     const webProxyPosition = ref({
-      x: window.innerWidth / 2 - 400,  // 向左偏移
-      y: window.innerHeight / 2 - 300
+      x: window.innerWidth / 2 + 150,  // 向左偏移
+      y: window.innerHeight / 2 - 200
     })
 
     const projectProxyPosition = ref({
@@ -244,7 +261,6 @@ export default {
           bringToFront('SpaceShooter')
           break
         case 'WebProxy':
-          proxyUrl.value = 'https://bh3gei.github.io/AllLinks/'
           showWebProxy.value = true
           isWebProxyMinimized.value = false
           bringToFront('WebProxy')
@@ -258,6 +274,11 @@ export default {
           showStratoProxy.value = true
           isStratoProxyMinimized.value = false
           bringToFront('StratoProxy')
+          break
+        case 'Browser':
+          showBrowser.value = true
+          isBrowserMinimized.value = false
+          bringToFront('Browser')
           break
       }
     }
@@ -371,6 +392,20 @@ export default {
       bringToFront('StratoProxy')
     }
 
+    const closeBrowser = () => {
+      showBrowser.value = false
+      isBrowserMinimized.value = false
+    }
+
+    const minimizeBrowser = () => {
+      isBrowserMinimized.value = true
+    }
+
+    const restoreBrowser = () => {
+      isBrowserMinimized.value = false
+      bringToFront('Browser')
+    }
+
     return {
       showProfile,
       show2048,
@@ -418,7 +453,14 @@ export default {
       minimizeStratoProxy,
       restoreStratoProxy,
       backgroundMode,
-      getThemeIcon
+      getThemeIcon,
+      showBrowser,
+      isBrowserMinimized,
+      browserPosition,
+      browserUrl,
+      closeBrowser,
+      minimizeBrowser,
+      restoreBrowser
     }
   }
 }

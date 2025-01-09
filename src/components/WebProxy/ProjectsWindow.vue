@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="links-window"
+    class="projects-window"
     ref="windowContainer"
     :style="maximized ? {} : { left: position.x + 'px', top: position.y + 'px' }"
   >
@@ -9,27 +9,30 @@
         <button class="control-btn close" @click="$emit('close')"></button>
         <button class="control-btn minimize" @click="$emit('minimize')"></button>
       </div>
-      <div class="title">All Links</div>
+      <div class="title">Projects</div>
       <div class="spacer"></div>
     </div>
-    <div class="links-content" :class="{ maximized }">
+    <div class="projects-content" :class="{ maximized }">
       <div v-if="loading" class="loading">
-        Loading links...
+        Loading projects...
       </div>
       <div v-else-if="error" class="error">
         {{ error }}
       </div>
-      <div v-else class="links-grid">
-        <a 
-          v-for="(link, index) in links" 
-          :key="index"
-          :href="link.url"
-          target="_blank"
-          class="link-item"
-        >
-          <span class="link-emoji">{{ link.emoji }}</span>
-          <span class="link-text">{{ link.text }}</span>
-        </a>
+      <div v-else class="projects-grid">
+        <template v-for="(projects, category) in groupedProjects" :key="category">
+          <div class="category-title">{{ category }}</div>
+          <a 
+            v-for="(project, index) in projects" 
+            :key="index"
+            :href="project.url"
+            target="_blank"
+            class="project-item"
+          >
+            <img :src="project.icon" class="project-icon" :alt="project.text">
+            <span class="project-text">{{ project.text }}</span>
+          </a>
+        </template>
       </div>
     </div>
   </div>
@@ -37,7 +40,7 @@
 
 <script>
 export default {
-  name: 'LinksWindow',
+  name: 'ProjectsWindow',
   props: {
     initialPosition: {
       type: Object,
@@ -53,44 +56,65 @@ export default {
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
       maximized: false,
-      links: [],
+      projects: [],
       loading: true,
       error: null
     }
   },
+  computed: {
+    groupedProjects() {
+      const groups = {}
+      this.projects.forEach(project => {
+        if (!groups[project.category]) {
+          groups[project.category] = []
+        }
+        groups[project.category].push(project)
+      })
+      return groups
+    }
+  },
   methods: {
-    async fetchLinks() {
+    async fetchProjects() {
       try {
-        const response = await fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/all_links.md')
+        const response = await fetch('https://raw.githubusercontent.com/BH3GEI/Resume/main/project_links.md')
         const text = await response.text()
         console.log('Raw markdown:', text)
-        this.links = this.parseMarkdownLinks(text)
-        console.log('Parsed links:', this.links)
+        this.projects = this.parseMarkdownProjects(text)
+        console.log('Parsed projects:', this.projects)
         this.loading = false
       } catch (error) {
-        this.error = 'Failed to load links. Please try again later.'
+        this.error = 'Failed to load projects. Please try again later.'
         this.loading = false
-        console.error('Error loading links:', error)
+        console.error('Error loading projects:', error)
       }
     },
-    parseMarkdownLinks(markdown) {
-      const links = []
+    parseMarkdownProjects(markdown) {
+      const projects = []
       const lines = markdown.split('\n')
+      let currentCategory = ''
       
       for (const line of lines) {
         if (!line.trim()) continue
         
-        const match = line.match(/\[(.*?)\]\[(.*?)\]\s*\[(.*?)\]/)
+        // Check for category headers (lines starting with #)
+        if (line.startsWith('#')) {
+          currentCategory = line.replace(/^#+\s*/, '').trim()
+          continue
+        }
+        
+        // Parse project links
+        const match = line.match(/\[(.*?)\]\((.*?)\)\s*\[icon\]\((.*?)\)/)
         if (match) {
-          links.push({
-            text: match[1].trim(),
+          projects.push({
+            text: match[1].trim().replace(/\*\*/g, ''),
             url: match[2].trim(),
-            emoji: match[3].trim()
+            icon: match[3].trim(),
+            category: currentCategory
           })
         }
       }
 
-      return links
+      return projects
     },
     startDrag(event) {
       if (this.maximized) return
@@ -125,21 +149,21 @@ export default {
     }
   },
   mounted() {
-    this.fetchLinks()
+    this.fetchProjects()
   }
 }
 </script>
 
 <style scoped>
-.links-window {
+.projects-window {
   position: fixed;
   background: rgba(15, 23, 42, 0.98);
   border-radius: 16px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.1);
-  width: 360px;
-  height: 480px;
+  width: 480px;
+  height: 600px;
   user-select: none;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
@@ -189,14 +213,6 @@ export default {
   transition: opacity 0.2s;
 }
 
-.control-btn.close::before {
-  content: '×';
-}
-
-.control-btn.minimize::before {
-  content: '−';
-}
-
 .control-btn:hover::before {
   opacity: 1;
 }
@@ -210,9 +226,17 @@ export default {
   border: 1px solid #e0443e;
 }
 
+.control-btn.close::before {
+  content: '×';
+}
+
 .control-btn.minimize {
   background: #febc2e;
   border: 1px solid #d89e24;
+}
+
+.control-btn.minimize::before {
+  content: '−';
 }
 
 .title {
@@ -229,7 +253,7 @@ export default {
   flex: 0 0 48px;
 }
 
-.links-content {
+.projects-content {
   height: calc(100% - 44px);
   padding: 16px 12px;
   overflow-y: auto;
@@ -241,24 +265,24 @@ export default {
   align-items: center;
 }
 
-.links-content::-webkit-scrollbar {
+.projects-content::-webkit-scrollbar {
   width: 4px;
 }
 
-.links-content::-webkit-scrollbar-track {
+.projects-content::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.links-content::-webkit-scrollbar-thumb {
+.projects-content::-webkit-scrollbar-thumb {
   background-color: rgba(148, 163, 184, 0.2);
   border-radius: 2px;
 }
 
-.links-content::-webkit-scrollbar-thumb:hover {
+.projects-content::-webkit-scrollbar-thumb:hover {
   background-color: rgba(148, 163, 184, 0.4);
 }
 
-.links-grid {
+.projects-grid {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -267,7 +291,17 @@ export default {
   padding: 0 4px 0 8px;
 }
 
-.link-item {
+.category-title {
+  color: #e2e8f0;
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  border-left: 3px solid #3b82f6;
+}
+
+.project-item {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -282,20 +316,20 @@ export default {
   margin: 0 auto;
 }
 
-.link-item:hover {
+.project-item:hover {
   background: rgba(51, 65, 85, 0.6);
   transform: translateX(4px);
   border-color: rgba(148, 163, 184, 0.15);
 }
 
-.link-emoji {
-  font-size: 18px;
-  min-width: 24px;
-  text-align: center;
-  opacity: 0.9;
+.project-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: cover;
 }
 
-.link-text {
+.project-text {
   font-size: 13px;
   font-weight: 500;
   flex-grow: 1;

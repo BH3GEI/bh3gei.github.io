@@ -107,7 +107,7 @@
                 <span class="icon">
                   <font-awesome-icon :icon="['fas', 'folder-open']" />
                 </span>
-                <span class="text">Portfolio</span>
+                <span class="text">Projects</span>
               </a>
 
               <a @click.prevent="handleAllLinksClick" href="#" class="social-link">
