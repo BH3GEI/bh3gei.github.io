@@ -206,7 +206,7 @@ export default {
 }
 
 .about-sidebar.expanded:not(.mobile) {
-  width: 400px;
+  width: 480px;
   height: 80vh;
 }
 
