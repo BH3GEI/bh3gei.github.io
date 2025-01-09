@@ -3,6 +3,7 @@
     <SimpleBackground v-if="backgroundMode === 'simple'" :background-mode="backgroundMode" />
     <StarryBackground v-else-if="backgroundMode === 'warp'" />
     <OrbitBackground v-else-if="backgroundMode === 'orbit'" />
+    <AboutSidebar />
     <div class="app-container">
       <MouseTrailer ref="mouseTrailer" />
       <div class="theme-toggle" @click="toggleTheme">
@@ -118,6 +119,7 @@ import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
 import SimpleBackground from './components/SimpleBackground/SimpleBackground.vue'
 import BrowserWindow from './components/WebProxy/BrowserWindow.vue'
+import AboutSidebar from './components/Sidebar/AboutSidebar.vue'
 
 library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faBlog, faFolderOpen, faLink, faStar, faGithub)
 
@@ -137,7 +139,8 @@ export default {
     StratoProxyWindow,
     BrowserWindow,
     FontAwesomeIcon,
-    SimpleBackground
+    SimpleBackground,
+    AboutSidebar
   },
   setup() {
     const showProfile = ref(true)

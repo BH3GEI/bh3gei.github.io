@@ -9,7 +9,7 @@
       <div class="spacer"></div>
     </div>
     <div v-if="isMobile" class="mobile-notice">
-      Recommended: Visit on PC for full experience
+      Visit on PC for full experience
     </div>
     <div class="window-content">
       <details open @toggle="onToggle" ref="details">

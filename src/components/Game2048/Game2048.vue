@@ -91,8 +91,8 @@ export default {
   data() {
     return {
       position: {
-        x: window.innerWidth / 2 - 250,
-        y: 100
+        x: window.innerWidth / 2 ,//- 250,
+        y: 25
       },
       isDragging: false,
       dragOffset: { x: 0, y: 0 },
