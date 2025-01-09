@@ -357,7 +357,7 @@ export default {
         const windowHeight = window.innerHeight
         position.value = {
           x: (windowWidth - profileWindow.offsetWidth) / 2,
-          y: (windowHeight - profileWindow.offsetHeight) / 2
+          y: (windowHeight - profileWindow.offsetHeight) / 2 - 10
         }
       }
     })

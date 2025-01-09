@@ -1,11 +1,12 @@
 <template>
   <div id="app" class="dark-mode">
-    <StarryBackground v-if="isWarpMode" />
-    <OrbitBackground v-else />
+    <SimpleBackground v-if="backgroundMode === 'simple'" :background-mode="backgroundMode" />
+    <StarryBackground v-else-if="backgroundMode === 'warp'" />
+    <OrbitBackground v-else-if="backgroundMode === 'orbit'" />
     <div class="app-container">
       <MouseTrailer ref="mouseTrailer" />
       <div class="theme-toggle" @click="toggleTheme">
-        <font-awesome-icon :icon="['fas', isWarpMode ? 'rocket' : 'globe']" />
+        <font-awesome-icon :icon="['fas', getThemeIcon]" />
       </div>
       <div class="powered-by">
         Powered by <a href="https://vuejs.org" target="_blank">Vue</a> & <a href="https://workers.cloudflare.com" target="_blank">Cloudflare Workers</a>
@@ -90,9 +91,9 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog, faFolderOpen, faLink } from '@fortawesome/free-solid-svg-icons'
+import { faUser, faPuzzlePiece, faRocket, faGlobe, faBlog, faFolderOpen, faLink, faStar } from '@fortawesome/free-solid-svg-icons'
 import { faGithub } from '@fortawesome/free-brands-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import StarryBackground from './components/StarryBackground/StarryBackground.vue'
@@ -106,8 +107,9 @@ import LinksWindow from './components/WebProxy/LinksWindow.vue'
 import StratoProxyWindow from './components/WebProxy/StratoProxyWindow.vue'
 import MouseTrailer from './components/MouseTrailer/MouseTrailer.vue'
 import Dock from './components/Dock/Dock.vue'
+import SimpleBackground from './components/SimpleBackground/SimpleBackground.vue'
 
-library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faGithub, faBlog, faFolderOpen, faLink)
+library.add(faUser, faPuzzlePiece, faRocket, faGlobe, faBlog, faFolderOpen, faLink, faStar, faGithub)
 
 export default {
   name: 'App',
@@ -123,7 +125,8 @@ export default {
     WebProxyWindow,
     LinksWindow,
     StratoProxyWindow,
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    SimpleBackground
   },
   setup() {
     const showProfile = ref(true)
@@ -163,6 +166,20 @@ export default {
       y: window.innerHeight / 2 - 300
     })
 
+    const backgroundMode = ref('simple') // 默认使用简单背景
+    const getThemeIcon = computed(() => {
+      switch (backgroundMode.value) {
+        case 'simple':
+          return 'star'
+        case 'warp':
+          return 'rocket'
+        case 'orbit':
+          return 'globe'
+        default:
+          return 'star'
+      }
+    })
+
     const checkMobile = () => {
       isMobile.value = window.innerWidth <= 768;
     };
@@ -179,12 +196,24 @@ export default {
 
     const toggleTheme = () => {
       import('vue').then(({ nextTick }) => {
-        isWarpMode.value = !isWarpMode.value
+        // 循环切换背景模式
+        switch (backgroundMode.value) {
+          case 'simple':
+            backgroundMode.value = 'warp'
+            break
+          case 'warp':
+            backgroundMode.value = 'orbit'
+            break
+          case 'orbit':
+            backgroundMode.value = 'simple'
+            break
+        }
+        
         nextTick(() => {
-          if (isWarpMode.value) {
+          if (backgroundMode.value === 'warp') {
             const starryBg = document.querySelector('.starry-background')
             if (starryBg) starryBg.getContext('2d').canvas.height = window.innerHeight
-          } else {
+          } else if (backgroundMode.value === 'orbit') {
             const orbitBg = document.querySelector('.orbit-background')
             if (orbitBg) orbitBg.getContext('2d').canvas.height = window.innerHeight
           }
@@ -387,7 +416,9 @@ export default {
       stratoProxyPosition,
       closeStratoProxy,
       minimizeStratoProxy,
-      restoreStratoProxy
+      restoreStratoProxy,
+      backgroundMode,
+      getThemeIcon
     }
   }
 }

@@ -1,6 +1,13 @@
 <template>
   <div class="orbit-container">
     <canvas ref="canvas" class="orbit-background"></canvas>
+    <div class="orbit-controls" :class="{ 'show-tooltip': showTooltip }">
+      <div class="control-group">
+        <div class="control-text">SPEED: {{ orbitSpeed.toFixed(2) }}x</div>
+        <div class="control-text">GRAVITY: {{ gravityEffect.toFixed(2) }}x</div>
+      </div>
+      <div class="tooltip">Use Shift + mouse wheel for speed, mouse wheel for gravity</div>
+    </div>
   </div>
 </template>
 
@@ -18,6 +25,9 @@ export default {
     let mouseY = window.innerHeight / 2
     let isMouseActive = false
     let mouseActiveTimeout = null
+    const orbitSpeed = ref(1.0)
+    const gravityEffect = ref(1.0)
+    const showTooltip = ref(true)
 
     class Planet {
       constructor(star, orbitRadius, color) {
@@ -306,12 +316,36 @@ export default {
       animationFrameId = requestAnimationFrame(animate)
     }
 
+    const handleWheel = (e) => {
+      e.preventDefault()
+      const delta = e.deltaY > 0 ? -0.1 : 0.1
+
+      if (e.shiftKey) {
+        // 调节速度
+        orbitSpeed.value = Number(Math.max(0.1, Math.min(5.0, orbitSpeed.value + delta)).toFixed(2))
+        solarSystems.forEach(system => {
+          system.orbitSpeed = Math.sqrt(100 / system.orbitRadius) * 0.004 * orbitSpeed.value
+          system.planets.forEach(planet => {
+            planet.orbitSpeed = Math.sqrt(system.mass / Math.pow(planet.semiMajorAxis, 3)) * 0.01 * orbitSpeed.value
+          })
+        })
+      } else {
+        // 调节引力
+        gravityEffect.value = Number(Math.max(0.1, Math.min(5.0, gravityEffect.value + delta)).toFixed(2))
+      }
+
+      setTimeout(() => {
+        showTooltip.value = false
+      }, 3000)
+    }
+
     onMounted(() => {
       if (canvas.value) {
         ctx = canvas.value.getContext('2d')
         resizeCanvas()
         window.addEventListener('resize', resizeCanvas)
         window.addEventListener('mousemove', handleMouseMove)
+        window.addEventListener('wheel', handleWheel)
         
         const centerX = window.innerWidth / 2
         const centerY = window.innerHeight / 2
@@ -330,13 +364,17 @@ export default {
     onBeforeUnmount(() => {
       window.removeEventListener('resize', resizeCanvas)
       window.removeEventListener('mousemove', handleMouseMove)
+      window.removeEventListener('wheel', handleWheel)
       if (animationFrameId) {
         cancelAnimationFrame(animationFrameId)
       }
     })
 
     return {
-      canvas
+      canvas,
+      orbitSpeed,
+      gravityEffect,
+      showTooltip
     }
   }
 }
@@ -355,5 +393,48 @@ export default {
 .orbit-background {
   width: 100%;
   height: 100%;
+}
+
+.orbit-controls {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-secondary);
+  padding: 6px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.control-group {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.control-text {
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.tooltip {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -30px;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.show-tooltip .tooltip {
+  opacity: 1;
 }
 </style>

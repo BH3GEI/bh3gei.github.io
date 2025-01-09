@@ -5,6 +5,9 @@
       <div class="warp-text">WARP {{ warpLevel }}</div>
       <div class="tooltip">Use mouse wheel to adjust warp speed</div>
     </div>
+    <div class="stardate-display">
+      <div class="stardate-text">STARDATE {{ stardate }}</div>
+    </div>
   </div>
 </template>
 
@@ -22,6 +25,7 @@ export default {
     const baseSpeed = 1
     const currentSpeed = computed(() => baseSpeed * warpLevel.value)
     const showTooltip = ref(true)
+    const stardate = ref('')
 
     class Star {
       constructor() {
@@ -138,6 +142,19 @@ export default {
       }, 3000)
     }
 
+    const calculateStardate = () => {
+      const now = new Date()
+      const year = now.getFullYear()
+      const yearStart = new Date(year, 0, 1)
+      const secondsInYear = (now - yearStart) / 1000
+      const totalSecondsInYear = 365.25 * 24 * 60 * 60
+      const yearFraction = secondsInYear / totalSecondsInYear
+      const baseYear = 2318
+      const stardateBase = (year - baseYear) * 1000
+      const stardateDecimal = yearFraction * 1000
+      stardate.value = (stardateBase + stardateDecimal).toFixed(4)
+    }
+
     onMounted(() => {
       ctx = canvas.value.getContext('2d')
       handleResize()
@@ -150,6 +167,8 @@ export default {
       ctx.fillStyle = gradient
       ctx.fillRect(0, 0, canvas.value.width, canvas.value.height)
       animate()
+      calculateStardate()
+      setInterval(calculateStardate, 1000)
     })
 
     onUnmounted(() => {
@@ -163,7 +182,8 @@ export default {
       canvas,
       warpLevel,
       showTooltip,
-      handleWheel
+      handleWheel,
+      stardate
     }
   }
 }
@@ -227,5 +247,26 @@ canvas {
 
 .show-tooltip .tooltip {
   opacity: 1;
+}
+
+.stardate-display {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: var(--bg-secondary);
+  padding: 6px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  backdrop-filter: blur(5px);
+  transition: all 0.3s ease;
+}
+
+.stardate-text {
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 </style>
