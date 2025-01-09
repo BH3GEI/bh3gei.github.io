@@ -257,8 +257,24 @@ export default {
   padding-right: 12px;
   overflow-y: auto;
   color: #e2e8f0;
-  scrollbar-width: none;  /* Firefox */
-  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  
+  /* Use min-height to ensure content is centered only when shorter than container */
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Center content only when it's shorter than container */
+.sidebar-content:after {
+  content: '';
+  flex: 1;
+}
+
+.sidebar-content:before {
+  content: '';
+  flex: 1;
 }
 
 .sidebar-content::-webkit-scrollbar {
@@ -282,6 +298,10 @@ export default {
   opacity: 0;
   transform: translateX(-20px);
   transition: all 0.3s ease;
+  /* Remove any default margins that might affect centering */
+  margin: 0;
+  /* Add min-height to ensure content fills available space */
+  min-height: fit-content;
 }
 
 .expanded .markdown-content {

@@ -177,7 +177,7 @@ export default {
     })
 
     const projectProxyPosition = ref({
-      x: window.innerWidth / 2 - 200,  // 向右偏移
+      x: window.innerWidth / 2 + 200,  // 向右偏移
       y: window.innerHeight / 2 - 300
     })
 
