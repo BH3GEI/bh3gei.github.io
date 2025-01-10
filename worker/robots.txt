@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+Allow: /posts/
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: https://liyao.blog/sitemap.xml
+
+# Crawl-delay: 10
+
+# Block specific bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: / 

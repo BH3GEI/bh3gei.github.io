@@ -252,7 +252,7 @@ export default {
 
     const handleBlogChoice = (choice) => {
       if (choice === 'new') {
-        window.open('https://blog.stratosphericus.workers.dev', '_blank')
+        window.open('https://bh3gei.github.io/blog/', '_blank')
       } else {
         emit('open-blog')
       }

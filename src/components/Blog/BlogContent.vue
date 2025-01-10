@@ -92,7 +92,7 @@ export default {
 
     const currentPostUrl = computed(() => {
       if (!currentPost.value) return ''
-      return `https://blog.stratosphericus.workers.dev/${encodeURIComponent(
+      return `https://bh3gei.github.io/blog/${encodeURIComponent(
         currentPost.value.file.replace(/posts\//g, '').replace(/\.md/g, '')
       )}`
     })
