@@ -26,7 +26,7 @@
       <div class="proxy-content" :class="{ maximized }">
         <iframe
           ref="proxyFrame"
-          src="https://https://stratoproxy.stratosphericus.workers.dev/"
+          src="https://stratoproxy.stratosphericus.workers.dev/"
           @load="handleIframeLoad"
           :style="{
             transform: `scale(${scale})`,
